@@ -1,0 +1,21 @@
+{
+  "name": "xy-dcloud",
+  "version": "1.0.0",
+  "description": "新阅云下载",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": [
+    "Electron",
+    "quick",
+    "start",
+    "tutorial",
+    "demo"
+  ],
+  "author": "pzl",
+  "license": "CC0-1.0",
+  "devDependencies": {
+    "electron": "^7.1.5"
+  }
+}
