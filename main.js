@@ -6,9 +6,6 @@ const path = require('path')
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 
-console.log(app, 'app')
-console.log(require.resolve('electron'));
-
 function createWindow () {
   // Create the browser window.
   mainWindow = new BrowserWindow({
