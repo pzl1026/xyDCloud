@@ -1,14 +1,6 @@
 /**
- * 登录
+ * 用户验证检查
  */
- function handleLogin() {
-
- }
-
-/**
- * 微信登陆
- */
-function handleWxLogin () {
+function userAuthentication () {
 
 }
-
