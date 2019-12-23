@@ -52,7 +52,6 @@ function ipcInit() {
         event.reply('notice-htm', '网络已中断')
     });
 
-
     // 该事件页面全局监听
     ipcMain.on('pfile-download', (event) => {
         // 项目文件下载处理
@@ -65,6 +64,7 @@ function ipcInit() {
         event.reply('pfile-fail', '下载失败');
 
         // 项目文件下载成功，发送某个文件成功状态
+        // 当页面在项目下载记录时
         event.reply('pfile-success', '下载成功');
     });
 
@@ -80,6 +80,7 @@ function ipcInit() {
         event.reply('dfile-fail', '下载失败');
 
         // 设备文件下载成功，发送某个文件成功状态
+        // 当页面在设备下载记录页时
         event.reply('dfile-success', '下载成功');
     });
 
