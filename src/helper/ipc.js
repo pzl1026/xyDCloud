@@ -83,16 +83,26 @@ function ipcInit() {
         event.reply('dfile-success', '下载成功');
     });
 
-    // 该事件页面全局监听
+    // 该事件项目页面监听
     // 轮询监听是否文件更新
-    ipcMain.on('loop-update', (event) => {
-        // 设备文件下载处理
+    ipcMain.on('loop-project-update', (event) => {
+        // 轮询监听的项目列表更新
 
         // 当项目数发生更新时，触发页面渲染，仅在项目列表页时触发
         event.reply('project-render', '项目有更新');
-        
+    });
+
+    // 设备列表页监听
+    ipcMain.on('device-update', (event) => {
+        // 设备列表更新
+
         // 当设备数发生更新时，触发页面渲染，仅在设备列表页时触发
         event.reply('device-render', '设备有更新');
+    });
+
+    // 设备列表页监听
+    ipcMain.on('device-file-update', (event) => {
+        // 某个设备文件列表更新
 
         // 当某个设备视频数发生更新时，触发页面渲染，仅在设备视频列表页时触发
         event.reply('device-file-render', '设备文件有更新');
