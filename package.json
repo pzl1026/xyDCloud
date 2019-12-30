@@ -4,8 +4,9 @@
   "description": "新阅云下载",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "gulp watch:electron"
   },
+  "dev": true,
   "keywords": [
     "Electron",
     "quick",
@@ -16,9 +17,12 @@
   "author": "pzl",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "^7.1.5"
+    "electron": "^7.1.5",
+    "electron-connect": "^0.6.3",
+    "gulp": "^4.0.2"
   },
   "dependencies": {
+    "electron-reload": "^1.5.0",
     "electron-store": "^5.1.0"
   }
 }

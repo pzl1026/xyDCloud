@@ -2,7 +2,15 @@
 const {app, BrowserWindow} = require('electron')
 const path = require('path');
 const download = require('./src/helper/download');
+// require('electron-debug')({ showDevTools: true })
+const ipcInit = require('./src/helper/ipc');
+// require('electron-reload')(__dirname); //引入
+const client = require('electron-connect').client;
+
 require('./src/global')();
+console.log(global.STORE, 'kkk');
+
+// 
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -21,7 +29,7 @@ function createWindow () {
 
   // and load the index.html of the app.
   // mainWindow.loadFile('./index.html')
-  mainWindow.loadURL("http://localhost:8080/");
+  mainWindow.loadURL("http://localhost:8000/login");
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools()
@@ -33,9 +41,11 @@ function createWindow () {
     // when you should delete the corresponding element.
     mainWindow = null
   })
+  console.log(222333222)
 
-  download.downInit();
-
+  client.create(mainWindow);
+  // download.downInit(mainWindow);
+  ipcInit();
 }
 
 // This method will be called when Electron has finished

@@ -1,4 +1,4 @@
-function downInit () {
+function downInit (mainWindow) {
     mainWindow.webContents.session.on('will-download', (event, item, webContents) => {
         // 设置保存路径,使Electron不提示保存对话框。
         item.setSavePath('D:\\test\\a.mp4')
@@ -26,7 +26,7 @@ function downInit () {
     });
     
     setTimeout(function () {
-        mainWindow.webContents.downloadURL('http://video2.uxinyue.com/Act-ss-mp4-ld/a846ee7b59144f61bfabe8cd2b55f534/95d48f76e4dd86780f3bb1d59600451d-ed0fb0984d6e3148afb17af08574000b.mp4');
+        // mainWindow.webContents.downloadURL('http://video2.uxinyue.com/Act-ss-mp4-ld/a846ee7b59144f61bfabe8cd2b55f534/95d48f76e4dd86780f3bb1d59600451d-ed0fb0984d6e3148afb17af08574000b.mp4');
     }, 5000)
 }
 
