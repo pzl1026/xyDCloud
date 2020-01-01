@@ -1,7 +1,7 @@
 // 文件字段（除了基础的视频信息的另外字段，项目/盒子）
 const VIDEO_ACTION_FEILDS = {
     isFail: false, //是否下载失败
-    isSuccess: false,
+    isSuccess: false
 };
 
 // 项目字段 
