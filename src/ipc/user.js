@@ -1,5 +1,6 @@
 const { ipcMain } = require('electron');
 const user = require('../application/user');
+const {loopDownload} = require('../helper/download');
 
 !(function ipcUser() {
     ipcMain.on('check-user-info', (event) => {
@@ -16,9 +17,10 @@ const user = require('../application/user');
         let userInfo = user.getUser(data);
         if (!userInfo) {
             user.storeUser(data);
-        } 
+        }
         global.USER_INFO = userInfo;
         global.USER_ID = data.login_id;
+        loopDownload();
       
         // 登录了之后，将个人信息发送到页面
         event.reply('store-client-user', data);

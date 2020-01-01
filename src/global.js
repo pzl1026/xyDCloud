@@ -5,6 +5,7 @@
 var Store = require('electron-store');
 
 var globalInit = (function () {
+    let store = new Store();
     return function () {
         global.attrs = {
             NET_IS_CONNECT: false, //是否有网络
@@ -17,11 +18,14 @@ var globalInit = (function () {
             CURRENT_DOWN_BOX_FILE: null,    //当前盒子下载的文件信息
             IS_PAUSE_PROJECT: false,    //项目文件下载是否暂停
             IS_PAUSE_BOX: false,         //盒子文件下载是否暂停
-            STORE:new Store(),
+            STORE:store,
         };
-
+        global.store = store;
         global.USER_ID = '';
-    }
+        global.IS_PROJECT_DOWNLOADING = false;
+        global.DOWNLOADING_VIDEO = null;
+        global.NEED_LOOP_DOWNLOAD = null;
+    };
 })();
 
 module.exports = globalInit;

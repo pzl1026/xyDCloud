@@ -2,6 +2,7 @@ const { ipcMain, dialog } = require('electron');
 const user = require('../application/user');
 const {STORE_PREFIX, PROJECT_ACTION_FEILDS, VIDEO_ACTION_FEILDS} = require('../config/store');
 const _ = require('lodash');
+const {downListeners, startDownloading} = require('../helper/download');
 
 /**
  * 保存项目到本地
@@ -62,6 +63,7 @@ function saveProjectPath(data) {
     userStore.projects.forEach(item => {
         if (item.id == data.projectId) {
             item.localPath = data.localPath;
+            item.isPause = false;
         }
     });
     store.set(STORE_PREFIX + USER_ID, userStore);
@@ -69,6 +71,7 @@ function saveProjectPath(data) {
 }
 
 !(function ipcProject() {
+    downListeners();
     // 该事件项目页面监听
     // 轮询监听是否文件更新
     ipcMain.on('save-projects', (event, data) => {
@@ -100,7 +103,12 @@ function saveProjectPath(data) {
     ipcMain.on('save-project-path', (event, data) => {
         // 对某个项目的路径进行设置
         let projects = saveProjectPath(data);
+
+        // 如果刚新建第一个就开始下载；
+        if(!IS_PROJECT_DOWNLOADING) {
+            IS_PROJECT_DOWNLOADING = true;
+            startDownloading();
+        }
         event.reply('create-project-path', projects);
     });
-
 })();    

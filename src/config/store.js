@@ -6,7 +6,7 @@ const VIDEO_ACTION_FEILDS = {
 
 // 项目字段 
 const PROJECT_ACTION_FEILDS = {
-    isPause: false,
+    isPause: true,
     localPath: '', //所映射的本地文件夹,
     isDel: false
 };

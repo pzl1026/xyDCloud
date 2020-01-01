@@ -42,7 +42,7 @@ function createWindow () {
   require('./src/global')();
   ipcInit();
 
-  // download.downInit(mainWindow);
+  // download.downListeners();
 
 }
 
