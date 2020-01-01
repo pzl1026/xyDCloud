@@ -101,7 +101,6 @@ function saveProjectPath(data) {
         // 对某个项目的路径进行设置
         let projects = saveProjectPath(data);
         event.reply('create-project-path', projects);
-        // event.reply('project-render', projects);
     });
 
 })();    

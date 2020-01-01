@@ -14,7 +14,6 @@ const user = require('../application/user');
         // 登录触发逻辑处理
         // 存储登录信息到store，成功之后跳转页面
         let userInfo = user.getUser(data);
-        console.log(data, 'data')
         if (!userInfo) {
             user.storeUser(data);
         } 
