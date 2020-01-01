@@ -3,12 +3,9 @@ const {app, BrowserWindow} = require('electron')
 const path = require('path');
 const download = require('./src/helper/download');
 // require('electron-debug')({ showDevTools: true })
-const ipcInit = require('./src/helper/ipc');
+const ipcInit = require('./src/ipc');
 // require('electron-reload')(__dirname); //引入
 const client = require('electron-connect').client;
-
-require('./src/global')();
-console.log(global.STORE, 'kkk');
 
 // 
 
@@ -29,7 +26,7 @@ function createWindow () {
 
   // and load the index.html of the app.
   // mainWindow.loadFile('./index.html')
-  mainWindow.loadURL("http://localhost:8000/login");
+  mainWindow.loadURL("http://localhost:8001");
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools()
@@ -41,11 +38,12 @@ function createWindow () {
     // when you should delete the corresponding element.
     mainWindow = null
   })
-  console.log(222333222)
-
   client.create(mainWindow);
-  // download.downInit(mainWindow);
+  require('./src/global')();
   ipcInit();
+
+  // download.downInit(mainWindow);
+
 }
 
 // This method will be called when Electron has finished

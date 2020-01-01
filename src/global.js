@@ -17,8 +17,10 @@ var globalInit = (function () {
             CURRENT_DOWN_BOX_FILE: null,    //当前盒子下载的文件信息
             IS_PAUSE_PROJECT: false,    //项目文件下载是否暂停
             IS_PAUSE_BOX: false,         //盒子文件下载是否暂停
-            STORE:new Store()
+            STORE:new Store(),
         };
+
+        global.USER_ID = '';
     }
 })();
 
