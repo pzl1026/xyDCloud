@@ -6,7 +6,6 @@ function downListeners() {
         .webContents
         .session
         .on('will-download', (event, item, webContents) => {
-            console.log(DOWNLOADING_VIDEO, 'event, item, webContents')
             // 设置保存路径,使Electron不提示保存对话框。
             item.setSavePath(DOWNLOADING_VIDEO.localPath + '/' + DOWNLOADING_VIDEO.name + '.' + DOWNLOADING_VIDEO.ext);
 
@@ -36,20 +35,25 @@ function downListeners() {
         });
 
     // setTimeout(function () {
-    //     mainWindow.webContents.downloadURL('http://video2.uxinyue.com/Act-ss-mp4-ld/a846ee7b59144f61bfabe8cd2b55f534/95d48f76e4dd86780f3bb1d59600451d-ed0fb0984d6e3148afb17af08574000b.mp4');
-    // }, 1000)
+    // mainWindow.webContents.downloadURL('http://video2.uxinyue.com/Act-ss-mp4-ld/a8
+    // 46ee7b59144f61bfabe8cd2b55f534/95d48f76e4dd86780f3bb1d59600451d-ed0fb0984d6e31
+    // 48afb17af08574000b.mp4'); }, 1000)
 }
 
 function setSuccessOrFail(isSuccess) {
-    return new Promise ((resolve, reject) => {
+    return new Promise((resolve, reject) => {
         let userStore = store.get(STORE_PREFIX + USER_ID);
-        userStore.projects.forEach(item => {
-            item.videos.forEach(m => {
-                if (m.id == DOWNLOADING_VIDEO.id) {
-                    m.isSuccess = true;
-                }
+        userStore
+            .projects
+            .forEach(item => {
+                item
+                    .videos
+                    .forEach(m => {
+                        if (m.id == DOWNLOADING_VIDEO.id) {
+                            m.isSuccess = true;
+                        }
+                    });
             });
-        });
         store.set(STORE_PREFIX + USER_ID, userStore);
         setTimeout(() => {
             resolve();
@@ -60,19 +64,22 @@ function setSuccessOrFail(isSuccess) {
 function startDownloading() {
     const store = attrs.STORE;
     let userStore = store.get(STORE_PREFIX + USER_ID);
-    if (!userStore.projects || userStore.projects.length == 0) return;
+    if (!userStore.projects || userStore.projects.length == 0) 
+        return;
     let projects = userStore
         .projects
         .map(item => {
-            item.videos = item
-                .videos
-                .map(m => {
-                    m.localPath = item.localPath;
-                    return m;
-                });
+            if (item.videos) {
+                item.videos = item
+                    .videos
+                    .map(m => {
+                        m.localPath = item.localPath;
+                        return m;
+                    });
+            }
             return item;
-        });        
-    let downloadingProjects = projects.filter(m => !m.isPaused && m.localPath);
+        });
+    let downloadingProjects = projects.filter(m => !m.isPause && m.localPath);
     let downloadVideos = _.flatten(downloadingProjects.map(item => item.videos));
 
     DOWNLOADING_VIDEO = downloadVideos.find(item => !item.isSuccess);
@@ -81,16 +88,16 @@ function startDownloading() {
         IS_PROJECT_DOWNLOADING = false;
         return;
     }
-    console.log(DOWNLOADING_VIDEO, 'startDownloading')
+    console.log('start-download');
     mainWindow
         .webContents
         .downloadURL(DOWNLOADING_VIDEO.url);
 }
 
 function loopDownload() {
-    console.log(2222)
     NEED_LOOP_DOWNLOAD = setInterval(() => {
-        if (IS_PROJECT_DOWNLOADING) return;
+        if (IS_PROJECT_DOWNLOADING) 
+            return;
         IS_PROJECT_DOWNLOADING = true;
         startDownloading();
     }, 5000);

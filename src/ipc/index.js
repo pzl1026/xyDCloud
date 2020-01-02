@@ -2,8 +2,7 @@ const { ipcMain } = require('electron');
 
 
 function ipcInit() {
-    // const store = global.attrs.STORE;
-    // store.clear();
+    store.clear();
     ipcMain.on('asynchronous-message', (event, arg) => {
         console.log(arg) // prints "ping"
         event.reply('asynchronous-reply', 'pong')
