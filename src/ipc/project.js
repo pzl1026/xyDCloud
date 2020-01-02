@@ -3,6 +3,7 @@ const user = require('../application/user');
 const {STORE_PREFIX, PROJECT_ACTION_FEILDS, VIDEO_ACTION_FEILDS} = require('../config/store');
 const _ = require('lodash');
 const {downListeners, startDownloading} = require('../helper/download');
+const { shell } = require("electron");
 
 /**
  * 保存项目到本地
@@ -142,4 +143,10 @@ function saveProjectPath(data) {
         event.reply('changed-pause-status', userStore.projects);
     });
 
+    // 打开项目目录
+    ipcMain.on('open-project-dir', (event, projectId) => {
+        let userStore = store.get(STORE_PREFIX + USER_ID);
+        let project = userStore.projects.find(item => item.id == projectId);
+        shell.showItemInFolder(project.localPath);
+    });
 })();

@@ -1,5 +1,11 @@
 const _ = require('lodash');
 const {STORE_PREFIX} = require('../config/store');
+// const disk = require('diskusage');
+// const os = require('os');
+
+// getFreeSpace('/');
+
+
 
 function downListeners() {
     mainWindow
@@ -61,6 +67,18 @@ function setSuccessOrFail(isSuccess) {
     });
 }
 
+//检查磁盘容量
+async function getFreeSpace(path) {
+    try {
+      const { free } = await disk.check(path);
+      console.log(`Free space: ${free}`);
+      return free
+    } catch (err) {
+      console.error(err)
+      return 0
+    }
+  }
+
 function startDownloading() {
     const store = attrs.STORE;
     let userStore = store.get(STORE_PREFIX + USER_ID);
@@ -89,9 +107,9 @@ function startDownloading() {
         return;
     }
     console.log('start-download');
-    mainWindow
-        .webContents
-        .downloadURL(DOWNLOADING_VIDEO.url);
+    // mainWindow
+    //     .webContents
+    //     .downloadURL(DOWNLOADING_VIDEO.url);
 }
 
 function loopDownload() {
