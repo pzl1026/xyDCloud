@@ -181,14 +181,48 @@ function saveProjectPath(data) {
     ipcMain.on('delete-project', (event, projectId) => {
         let userStore = store.get(STORE_PREFIX + USER_ID);
         console.log(projectId, 'projectId')
-        userStore.projects.forEach(item => {
-            if (item.id == projectId) {
-                item.localPath = '';
-                item.isCreated = false;
-                item.videos = [];
-            }
-        });
+        userStore
+            .projects
+            .forEach(item => {
+                if (item.id == projectId) {
+                    item.localPath = '';
+                    item.isCreated = false;
+                    item.videos = [];
+                }
+            });
         store.set(STORE_PREFIX + USER_ID, userStore);
         event.reply('save-project-after-delete', userStore.projects.filter(m => m.isCreated));
+    });
+
+    // 获取所有的曾经下载过的跟即将下载以及失败的视频
+    ipcMain.on('post-all-videos', (event, projectId) => {
+        let userStore = store.get(STORE_PREFIX + USER_ID);
+        let videos = []
+        userStore
+            .projects
+            .forEach(item => {
+                if (item.isCreated) {
+                    // console.log(item.videos, 11);
+                    videos = videos.concat(item.videos);
+                } else {
+                    // console.log(22)
+                    item
+                        .videos
+                        .forEach(m => {
+                            if (m.isSuccess || m.isFail) {
+                                videos.push(m);
+                            }
+                        });
+                }
+            });
+// console.log(videos, 'videos');
+        videos = videos.sort((a, b) => {
+            let t1 = a.successTime || a.failTime;
+            let t2 = b.successTime || b.failTime;
+
+            return t2 - t1;
+        });
+
+        event.reply('get-all-videos', videos);
     });
 })();

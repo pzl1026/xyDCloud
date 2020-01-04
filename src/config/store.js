@@ -1,7 +1,11 @@
 // 文件字段（除了基础的视频信息的另外字段，项目/盒子）
 const VIDEO_ACTION_FEILDS = {
-    isFail: false, //是否下载失败
-    isSuccess: false
+    isFail: false, // 是否下载失败
+    isSuccess: false,   // 是否成功
+    successTime: 0,  // 下载成功时间
+    failTime: 0,    //下载失败时间
+    failReason: '',     // 失败原因
+    downloadProgress: 0 // 下载进度
 };
 
 // 项目字段 
