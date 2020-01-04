@@ -3,7 +3,7 @@ const user = require('../application/user');
 const {STORE_PREFIX, PROJECT_ACTION_FEILDS, VIDEO_ACTION_FEILDS} = require('../config/store');
 const _ = require('lodash');
 const {downListeners, startDownloading} = require('../helper/download');
-const { shell } = require("electron");
+const {shell} = require("electron");
 
 /**
  * 保存项目到本地
@@ -26,7 +26,9 @@ function saveProjects(list) {
         return Object.assign({}, item, PROJECT_ACTION_FEILDS);
     });
     store.set(STORE_PREFIX + USER_ID, userStore);
-    return userStore.projects.filter(m => m.localPath && m.isCreated);
+    return userStore
+        .projects
+        .filter(m => m.localPath && m.isCreated);
 }
 
 /**
@@ -80,21 +82,25 @@ function saveProjectPath(data) {
             }
         });
     store.set(STORE_PREFIX + USER_ID, userStore);
-    return userStore.projects.filter(m => m.localPath && m.isCreated);
+    return userStore
+        .projects
+        .filter(m => m.localPath && m.isCreated);
 }
 
 !(function ipcProject() {
     downListeners();
     // 该事件项目页面监听 轮询监听是否文件更新
     ipcMain.on('get-setting-projects', (event, data) => {
-            // 获取已设置的项目任务
-            let userStore = store.get(STORE_PREFIX + USER_ID);
-            let projectsSeted = [];
-            if (userStore.projects) {
-                projectsSeted = userStore.projects.filter(m => m.localPath && m.isCreated)
-            }
-            
-            event.reply('render-setting-projects', projectsSeted.map(m => m.id));
+        // 获取已设置的项目任务
+        let userStore = store.get(STORE_PREFIX + USER_ID);
+        let projectsSeted = [];
+        if (userStore.projects) {
+            projectsSeted = userStore
+                .projects
+                .filter(m => m.localPath && m.isCreated)
+        }
+
+        event.reply('render-setting-projects', projectsSeted.map(m => m.id));
     });
     // 该事件项目页面监听 轮询监听是否文件更新
     ipcMain.on('save-projects', (event, data) => {
@@ -143,21 +149,46 @@ function saveProjectPath(data) {
         // 对某个项目的路径进行设置
         let userStore = store.get(STORE_PREFIX + USER_ID);
 
-        userStore.projects = userStore.projects.map(item => {
-            if (projectId == item.id) {
-                item.isPause = !item.isPause;
-            }
-            return item;
-        });
+        userStore.projects = userStore
+            .projects
+            .map(item => {
+                if (projectId == item.id) {
+                    item.isPause = !item.isPause;
+                }
+                return item;
+            });
 
         store.set(STORE_PREFIX + USER_ID, userStore);
-        event.reply('changed-pause-status', userStore.projects.filter(m => item.localPath && item.isCreated));
+        event.reply('changed-pause-status', userStore.projects.filter(m => m.localPath && m.isCreated));
     });
 
     // 打开项目目录
     ipcMain.on('open-project-dir', (event, projectId) => {
         let userStore = store.get(STORE_PREFIX + USER_ID);
-        let project = userStore.projects.find(item => item.id == projectId);
+        let project = userStore
+            .projects
+            .find(item => item.id == projectId);
         shell.showItemInFolder(project.localPath);
+    });
+
+    // 打开项目网页
+    ipcMain.on('open-project-web-link', (event, projectId) => {
+        // 待做
+        shell.openExternal("http://www.google.com");
+    });
+
+    // 删除某个已创建的项目任务
+    ipcMain.on('delete-project', (event, projectId) => {
+        let userStore = store.get(STORE_PREFIX + USER_ID);
+        console.log(projectId, 'projectId')
+        userStore.projects.forEach(item => {
+            if (item.id == projectId) {
+                item.localPath = '';
+                item.isCreated = false;
+                item.videos = [];
+            }
+        });
+        store.set(STORE_PREFIX + USER_ID, userStore);
+        event.reply('save-project-after-delete', userStore.projects.filter(m => m.isCreated));
     });
 })();
