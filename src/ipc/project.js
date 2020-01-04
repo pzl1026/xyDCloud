@@ -26,7 +26,7 @@ function saveProjects(list) {
         return Object.assign({}, item, PROJECT_ACTION_FEILDS);
     });
     store.set(STORE_PREFIX + USER_ID, userStore);
-    return userStore.projects;
+    return userStore.projects.filter(m => m.localPath && m.isCreated);
 }
 
 /**
@@ -76,14 +76,26 @@ function saveProjectPath(data) {
             if (item.id == data.projectId) {
                 item.localPath = data.localPath;
                 item.isPause = false;
+                item.isCreated = true;
             }
         });
     store.set(STORE_PREFIX + USER_ID, userStore);
-    return userStore.projects;
+    return userStore.projects.filter(m => m.localPath && m.isCreated);
 }
 
 !(function ipcProject() {
     downListeners();
+    // 该事件项目页面监听 轮询监听是否文件更新
+    ipcMain.on('get-setting-projects', (event, data) => {
+            // 获取已设置的项目任务
+            let userStore = store.get(STORE_PREFIX + USER_ID);
+            let projectsSeted = [];
+            if (userStore.projects) {
+                projectsSeted = userStore.projects.filter(m => m.localPath && m.isCreated)
+            }
+            
+            event.reply('render-setting-projects', projectsSeted.map(m => m.id));
+    });
     // 该事件项目页面监听 轮询监听是否文件更新
     ipcMain.on('save-projects', (event, data) => {
         // 轮询监听的项目列表更新
@@ -118,7 +130,6 @@ function saveProjectPath(data) {
     ipcMain.on('save-project-path', (event, data) => {
         // 对某个项目的路径进行设置
         let projects = saveProjectPath(data);
-
         // 如果刚新建第一个就开始下载；
         if (!IS_PROJECT_DOWNLOADING) {
             IS_PROJECT_DOWNLOADING = true;
@@ -140,7 +151,7 @@ function saveProjectPath(data) {
         });
 
         store.set(STORE_PREFIX + USER_ID, userStore);
-        event.reply('changed-pause-status', userStore.projects);
+        event.reply('changed-pause-status', userStore.projects.filter(m => item.localPath && item.isCreated));
     });
 
     // 打开项目目录

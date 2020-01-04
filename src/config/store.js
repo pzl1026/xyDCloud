@@ -8,7 +8,7 @@ const VIDEO_ACTION_FEILDS = {
 const PROJECT_ACTION_FEILDS = {
     isPause: true,
     localPath: '', //所映射的本地文件夹,
-    isDel: false
+    isCreated: false //判断是否被创建到下载任务里面
 };
 
 // 设备字段 

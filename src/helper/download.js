@@ -107,9 +107,9 @@ function startDownloading() {
         return;
     }
     console.log('start-download');
-    // mainWindow
-    //     .webContents
-    //     .downloadURL(DOWNLOADING_VIDEO.url);
+    mainWindow
+        .webContents
+        .downloadURL(DOWNLOADING_VIDEO.url);
 }
 
 function loopDownload() {
