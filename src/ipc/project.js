@@ -203,19 +203,27 @@ function saveProjectPath(data) {
             .forEach(item => {
                 if (item.isCreated) {
                     // console.log(item.videos, 11);
-                    videos = videos.concat(item.videos);
+                    videos = videos
+                        .concat(item.videos)
+                        .map(m => ({
+                            ...m,
+                            localPath: item.localPath,
+                            projectName: item.name
+                        }));
                 } else {
                     // console.log(22)
                     item
                         .videos
                         .forEach(m => {
                             if (m.isSuccess || m.isFail) {
+                                m.localPath = item.localPath;
+                                m.projectName = item.name;
                                 videos.push(m);
                             }
                         });
                 }
             });
-// console.log(videos, 'videos');
+        // console.log(videos, 'videos');
         videos = videos.sort((a, b) => {
             let t1 = a.successTime || a.failTime;
             let t2 = b.successTime || b.failTime;
