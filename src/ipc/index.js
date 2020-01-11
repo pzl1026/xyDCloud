@@ -2,7 +2,7 @@ const { ipcMain, Notification } = require('electron');
 
 
 function ipcInit() {
-    store.clear();
+    // store.clear();
     ipcMain.on('asynchronous-message', (event, arg) => {
         console.log(arg) // prints "ping"
         event.reply('asynchronous-reply', 'pong')
@@ -15,6 +15,7 @@ function ipcInit() {
 
     require('./user');
     require('./project');
+    require('./device');
 
     // ipcMain.on('check-user-info', (event) => {
     //     // 如果没有登录，

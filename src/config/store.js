@@ -17,12 +17,14 @@ const PROJECT_ACTION_FEILDS = {
 
 // 设备字段 
 const DEVICE_ACTION_FEILDS = {
-    isPause: false,
-    isCancel: false,
-    isDowning: false, //该项目是否正在下载
-    isFail: false, //该设备是否因为某个文件下载失败所设置
+    isPause: false,   //是否取消
+    isDelete: false,   //是否删除
+    progress: '',       //设备总文件下载进度
     localPath: '', //所映射的本地文件夹,
-    isLink: false
+    fialMsg: '',    //文件下载失败原因
+    successTime: '', //设备文件全部下载成功时间
+    downloadCount: 0,   //设备正在下载的文件数
+    downloadSuccessCount: 0 //设备已经成功下载的数量
 };
 
 const STORE_PREFIX = 'user_store_';
