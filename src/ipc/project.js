@@ -23,6 +23,7 @@ function saveProjects(list) {
         if (isset) {
             return isset;
         }
+        
         return Object.assign({}, item, PROJECT_ACTION_FEILDS);
     });
     store.set(STORE_PREFIX + USER_ID, userStore);
@@ -79,6 +80,12 @@ function saveProjectPath(data) {
                 item.localPath = data.localPath;
                 item.isPause = false;
                 item.isCreated = true;
+                item.videos = item.videos.map(m => {
+                    return {
+                        ...m,
+                        ...VIDEO_ACTION_FEILDS
+                    }
+                });
             }
         });
     store.set(STORE_PREFIX + USER_ID, userStore);
@@ -201,17 +208,8 @@ function saveProjectPath(data) {
         userStore
             .projects
             .forEach(item => {
-                if (item.isCreated) {
+                if (!item.isCreated || item.isPause) {
                     // console.log(item.videos, 11);
-                    videos = videos
-                        .concat(item.videos)
-                        .map(m => ({
-                            ...m,
-                            localPath: item.localPath,
-                            projectName: item.name
-                        }));
-                } else {
-                    // console.log(22)
                     item
                         .videos
                         .forEach(m => {
@@ -220,7 +218,16 @@ function saveProjectPath(data) {
                                 m.projectName = item.name;
                                 videos.push(m);
                             }
-                        });
+                        });          
+                } else {
+                    // console.log(22)
+                    videos = videos
+                        .concat(item.videos)
+                        .map(m => ({
+                            ...m,
+                            localPath: item.localPath,
+                            projectName: item.name
+                        }));
                 }
             });
         // console.log(videos, 'videos');
