@@ -153,6 +153,8 @@ function startDownloading() {
         return;
     }
     console.log('start-download');
+    // todo:: 进行网络判断，进行容量判断
+
     mainWindow
         .webContents
         .downloadURL(DOWNLOADING_VIDEO.url);

@@ -16,17 +16,46 @@ function downloadFileCallback(arg, percentage)
         // 显示进度
     }
     else if (arg === "finished")
-    {
+    {   
         // 通知完成
-        console.log('下载成功')
+        console.log('下载成功')；
+        let userStore = store.get(STORE_PREFIX + USER_ID);
+        userStore.devices.forEach(item => {
+            if(DOWNLOADING_DEVICE_VIDEO.ip == item.ip) {
+                item['media-files'].forEach(m => {
+                    if (DOWNLOADING_DEVICE_VIDEO.kbps === m.kbps) {
+                        m.isSuccess = true;
+                        m.successTime = new Date().valueOf();
+                        m.downloadProgress = 1;
+                    }
+                });
+            }
+        });
     }
 }
 
-function startDownload(fileInfo) {
+function startDownload() {
     const StreamDownload2 = new StreamDownload();
-
-    // 调用下载
-    StreamDownload2.downloadFile(fileInfo.url, fileInfo.dir, fileInfo.filename, downloadFileCallback)
+    let userStore = store.get(STORE_PREFIX + USER_ID);
+    let device = userStore.devices.find(item => !item.isPause);
+    if(device) {
+        let video = device['media-files'].find(m => m.needDownload);
+        if (video) {
+            DOWNLOADING_DEVICE_VIDEO = {
+                ip: device.ip,
+                localPath: sdevice.localPath,
+                ...video
+            }；
+            // todo:: 进行网络判断，进行容量判断，进行设备状态判断
+            
+            // 调用下载
+            StreamDownload2.downloadFile(video.downpath, device.localPath, video.name, downloadFileCallback)
+        } else {
+            IS_DEVICE_DOWNLOADING = false;
+        }
+    } else {
+        IS_DEVICE_DOWNLOADING = false;
+    }
 }
 
 function setDownloadVideoInfo () {
@@ -189,6 +218,10 @@ function clearLoop() {
         // 选择视频下载
         ipcMain.on('change-device-videos-download', (event, data) => {
             let videos = changeDevicesVideosDownload(data);
+            if (!IS_DEVICE_DOWNLOADING) {
+                IS_DEVICE_DOWNLOADING = true;
+                startDownload();
+            }
             event.reply('render-device-videos', videos);
         });
 

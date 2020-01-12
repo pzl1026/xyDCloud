@@ -23,7 +23,9 @@ var globalInit = (function () {
         global.store = store;
         global.USER_ID = '';
         global.IS_PROJECT_DOWNLOADING = false;
+        global.IS_DEVICE_DOWNLOADING = false;
         global.DOWNLOADING_VIDEO = null;
+        global.DOWNLOADING_DEVICE_VIDEO = null;
         global.NEED_LOOP_DOWNLOAD = null;
     };
 })();
