@@ -39,13 +39,30 @@ function saveDevicesVideos(data) {
     let userStore = store.get(STORE_PREFIX + USER_ID);
     userStore.devices = userStore.devices.map(item => {
         if (item.ip == data.ip) {
-            data.videos.array.forEach(m => {
+            data.videos.forEach(m => {
                 let isset = item['media-files'].find(n => n.kbps == m.kbps);
                 if (!isset) {
                     item['media-files'].unshift({
-                        ...isset,
+                        ...m,
                         ...DEVICE_VIDEO_ACTION_FEILDS
                     });
+                }
+            });
+        }
+        return item;
+    });
+    store.set(STORE_PREFIX + USER_ID, userStore);
+    return userStore.devices.find(m => m.ip == data.ip)['media-files'];
+}
+
+function changeDevicesVideosDownload(data) {
+    const store = attrs.STORE;
+    let userStore = store.get(STORE_PREFIX + USER_ID);
+    userStore.devices = userStore.devices.map(item => {
+        if (item.ip == data.ip) {
+            item['media-files'].forEach(m => {
+                if (data.videosKbps.includes(m.kbps)) {
+                    m.needDownload = true;
                 }
             });
         }
@@ -166,10 +183,16 @@ function clearLoop() {
     // 设置项目目录
     ipcMain.on('save-device-videos', (event, data) => {
         let videos = saveDevicesVideos(data);
-        // let devices = deleteDevice(device.ip);
-        console.log(videos, 'oooo')
         event.reply('render-device-videos', videos);
     });
+
+        // 选择视频下载
+        ipcMain.on('change-device-videos-download', (event, data) => {
+            let videos = changeDevicesVideosDownload(data);
+            event.reply('render-device-videos', videos);
+        });
+
+
 
 
 })();
