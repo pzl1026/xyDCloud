@@ -18,7 +18,7 @@ function downloadFileCallback(arg, percentage)
     else if (arg === "finished")
     {   
         // 通知完成
-        console.log('下载成功')；
+        console.log('下载成功');
         let userStore = store.get(STORE_PREFIX + USER_ID);
         userStore.devices.forEach(item => {
             if(DOWNLOADING_DEVICE_VIDEO.ip == item.ip) {
@@ -45,11 +45,11 @@ function startDownload() {
                 ip: device.ip,
                 localPath: sdevice.localPath,
                 ...video
-            }；
+            };
             // todo:: 进行网络判断，进行容量判断，进行设备状态判断
             
             // 调用下载
-            StreamDownload2.downloadFile(video.downpath, device.localPath, video.name, downloadFileCallback)
+            StreamDownload2.downloadFile(video.downpath, device.localPath, video.name, downloadFileCallback);
         } else {
             IS_DEVICE_DOWNLOADING = false;
         }

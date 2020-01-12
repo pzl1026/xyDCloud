@@ -1,4 +1,4 @@
-const { ipcMain, Notification } = require('electron');
+const { ipcMain, Notification, app } = require('electron');
 
 
 function ipcInit() {
@@ -33,6 +33,17 @@ function ipcInit() {
     //     // 获取之后，将所有设备数据发送到页面
     //     event.reply('render-device', 'pong')
     // });
+
+
+    ipcMain.on('change-start-login', (event, openAtLogin) => {
+    
+        app.setLoginItemSettings({
+            openAtLogin, // Boolean 在登录时启动应用
+            // openAsHidden: true, // Boolean (可选) mac 表示以隐藏的方式启动应用。~~~~
+            // path: '', String (可选) Windows - 在登录时启动的可执行文件。默认为 process.execPath.
+            // args: [] String Windows - 要传递给可执行文件的命令行参数。默认为空数组。注意用引号将路径换行。
+        })
+    });
 
     ipcMain.on('project-mapping-localpath', (event) => {
         // 项目映射本地文件夹
