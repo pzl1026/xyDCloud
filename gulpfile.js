@@ -7,3 +7,4 @@ gulp.task('watch:electron', function () {
   gulp.watch(['./**/*.js'], electron.restart);
   gulp.watch(['./*.{html,js,css}'], electron.reload);
 });
+// "start": "gulp watch:electron",

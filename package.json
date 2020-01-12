@@ -4,10 +4,10 @@
   "description": "新阅云下载",
   "main": "main.js",
   "scripts": {
-    "start": "gulp watch:electron",
-    "mac_pack": "electron-packager . xycloud --icon=img/app.icns --overwrite --out ../dist2/",
+    "start": "electron . --inspect=8000",
+    "mac_pack": "electron-packager . xycloud --icon=img/app.icns --overwrite --out ../dist2/ --download.mirror=https://npm.taobao.org/mirrors/electron/",
     "win_pack": "electron-packager . xycloud --icon=img/app.ico --platform win32 --arch x64 --out ../dist2/ --overwrite --download.mirror=https://npm.taobao.org/mirrors/electron/",
-    "dmg": "electron-installer-dmg ../dist2/xinyue-darwin-x64/xinyue.app xycloud --overwrite --out ../xy-electron-pack/",
+    "dmg": "electron-installer-dmg ../dist2/xycloud-darwin-x64/xycloud.app xycloud --overwrite --out ../dist2/",
     "setup": "electron-installer-windows --productName xinyue --src dist/xinyue-win32-x64/ --dest installers/ "
   },
   "dev": true,
@@ -22,14 +22,68 @@
   "license": "CC0-1.0",
   "devDependencies": {
     "electron": "^6.1.4",
-    "electron-connect": "^0.6.3",
+    "electron-builder": "^21.2.0",
+    "electron-installer-dmg": "^3.0.0",
     "electron-packager": "^14.1.1",
     "gulp": "^4.0.2"
   },
   "dependencies": {
+    "electron-connect": "^0.6.3",
     "electron-reload": "^1.5.0",
     "electron-store": "^5.1.0",
     "lodash": "^4.17.15",
     "request": "^2.88.0"
+  },
+  "build": {
+    "productName": "xinyuecloud",
+    "appId": "com.xinyuecloud.app",
+    "directories": {
+      "output": "../dist2"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "./img/app.ico",
+      "uninstallerIcon": "./img/app.ico",
+      "installerHeaderIcon": "./img/app.ico",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "xycloud",
+      "include": "build/script/installer.nsh"
+    },
+    "dmg": {
+      "contents": [
+        {
+          "x": 410,
+          "y": 150,
+          "type": "link",
+          "path": "/Applications"
+        },
+        {
+          "x": 130,
+          "y": 150,
+          "type": "file"
+        }
+      ]
+    },
+    "mac": {
+      "icon": "./img/app.icns",
+      "target": [
+        "dmg",
+        "zip"
+      ]
+    },
+    "win": {
+      "icon": "./img/app.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "ia32"
+          ]
+        }
+      ]
+    }
   }
 }
