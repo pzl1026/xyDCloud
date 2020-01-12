@@ -1,6 +1,6 @@
 const {ipcMain, dialog} = require('electron');
 const user = require('../application/user');
-const {STORE_PREFIX, DEVICE_ACTION_FEILDS, VIDEO_ACTION_FEILDS} = require('../config/store');
+const {STORE_PREFIX, DEVICE_ACTION_FEILDS, VIDEO_ACTION_FEILDS, DEVICE_VIDEO_ACTION_FEILDS} = require('../config/store');
 const _ = require('lodash');
 const StreamDownload = require('../helper/download2');
 const {shell} = require("electron");
@@ -34,13 +34,30 @@ function setDownloadVideoInfo () {
 }
 
 // 保存视频的信息，并新增可操作字段
-function saveDevicesVideos() {
-
+function saveDevicesVideos(data) {
+    const store = attrs.STORE;
+    let userStore = store.get(STORE_PREFIX + USER_ID);
+    userStore.devices = userStore.devices.map(item => {
+        if (item.ip == data.ip) {
+            data.videos.array.forEach(m => {
+                let isset = item['media-files'].find(n => n.kbps == m.kbps);
+                if (!isset) {
+                    item['media-files'].unshift({
+                        ...isset,
+                        ...DEVICE_VIDEO_ACTION_FEILDS
+                    });
+                }
+            });
+        }
+        return item;
+    });
+    store.set(STORE_PREFIX + USER_ID, userStore);
+    return userStore.devices.find(m => m.ip == data.ip)['media-files'];
 }
 
 // 保存设备
 function saveDevice (device) {
-    console.log(device, 'saveDevice')
+    // console.log(device, 'saveDevice')
     const store = attrs.STORE;
     let userStore = store.get(STORE_PREFIX + USER_ID);
     if (!userStore.devices) {
@@ -125,26 +142,34 @@ function clearLoop() {
         shell.showItemInFolder(localPath);
     });
 
-        // 打开文件夹窗口
-        ipcMain.on('open-folder-dialog-device', (event, device) => {
-            // 打开文件夹
-            dialog
-                .showOpenDialog(mainWindow, {
-                properties: ['openDirectory', 'createDirectory']
-            })
-                .then(res => {
-                    // 返回文件夹路径
-                    const localPath = res.filePaths[0];
-                    let devices = setDeviceLocalpath(device.ip, localPath);
-                    event.reply('render-device-list', devices);
-                });
-        });
+    // 打开文件夹窗口
+    ipcMain.on('open-folder-dialog-device', (event, device) => {
+        // 打开文件夹
+        dialog
+            .showOpenDialog(mainWindow, {
+            properties: ['openDirectory', 'createDirectory']
+        })
+            .then(res => {
+                // 返回文件夹路径
+                const localPath = res.filePaths[0];
+                let devices = setDeviceLocalpath(device.ip, localPath);
+                event.reply('render-device-list', devices);
+            });
+    });
 
-        // 设置项目目录
-        ipcMain.on('delete-device', (event, device) => {
-            let devices = deleteDevice(device.ip);
-            event.reply('render-device-list', devices);
-        });
+    // 设置项目目录
+    ipcMain.on('delete-device', (event, device) => {
+        let devices = deleteDevice(device.ip);
+        event.reply('render-device-list', devices);
+    });
+
+    // 设置项目目录
+    ipcMain.on('save-device-videos', (event, data) => {
+        let videos = saveDevicesVideos(data);
+        // let devices = deleteDevice(device.ip);
+        console.log(videos, 'oooo')
+        event.reply('render-device-videos', videos);
+    });
 
 
 })();

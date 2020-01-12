@@ -27,13 +27,20 @@ const DEVICE_ACTION_FEILDS = {
     downloadSuccessCount: 0 //设备已经成功下载的数量
 };
 
+// 设备文件字段
+const DEVICE_VIDEO_ACTION_FEILDS = {
+    ...VIDEO_ACTION_FEILDS,
+    needDownload: false
+}
+
 const STORE_PREFIX = 'user_store_';
 
 module.exports = {
     VIDEO_ACTION_FEILDS,
     PROJECT_ACTION_FEILDS,
     DEVICE_ACTION_FEILDS,
-    STORE_PREFIX
+    STORE_PREFIX,
+    DEVICE_VIDEO_ACTION_FEILDS
 }
 
 
