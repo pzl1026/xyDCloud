@@ -5,7 +5,7 @@ const download = require('./src/helper/download');
 // require('electron-debug')({ showDevTools: true })
 const ipcInit = require('./src/ipc');
 // require('electron-reload')(__dirname); //引入
-const client = require('electron-connect').client;
+// const client = require('electron-connect').client;
 
 // 
 
@@ -16,8 +16,10 @@ global.mainWindow = null;
 function createWindow () {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1280,
+    height: 800,
+    minWidth: 1280,
+    minHeight: 800,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true
@@ -38,7 +40,7 @@ function createWindow () {
     // when you should delete the corresponding element.
     mainWindow = null
   })
-  client.create(mainWindow);
+  // client.create(mainWindow);
   require('./src/global')();
   ipcInit();
 

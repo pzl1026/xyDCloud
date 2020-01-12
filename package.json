@@ -4,7 +4,11 @@
   "description": "新阅云下载",
   "main": "main.js",
   "scripts": {
-    "start": "gulp watch:electron"
+    "start": "gulp watch:electron",
+    "mac_pack": "electron-packager . xycloud --icon=img/app.icns --overwrite --out ../dist2/",
+    "win_pack": "electron-packager . xycloud --icon=img/app.ico --platform win32 --arch x64 --out ../dist2/ --overwrite --download.mirror=https://npm.taobao.org/mirrors/electron/",
+    "dmg": "electron-installer-dmg ../dist2/xinyue-darwin-x64/xinyue.app xycloud --overwrite --out ../xy-electron-pack/",
+    "setup": "electron-installer-windows --productName xinyue --src dist/xinyue-win32-x64/ --dest installers/ "
   },
   "dev": true,
   "keywords": [
@@ -17,8 +21,9 @@
   "author": "pzl",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "^7.1.5",
+    "electron": "^6.1.4",
     "electron-connect": "^0.6.3",
+    "electron-packager": "^14.1.1",
     "gulp": "^4.0.2"
   },
   "dependencies": {

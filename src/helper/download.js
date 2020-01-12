@@ -120,6 +120,7 @@ async function getFreeSpace(path) {
 function startDownloading() {
     const store = attrs.STORE;
     let userStore = store.get(STORE_PREFIX + USER_ID);
+    if (!userStore) return;
     if (!userStore.projects || userStore.projects.length == 0) 
         return;
     let projects = userStore
