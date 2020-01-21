@@ -196,7 +196,7 @@ function clearLoop() {
     ipcMain.on('get-devices', (event) => {
         // 获取设备
         let devices = getDevices();
-        event.reply('render-device-list', devices);
+        event.reply('render-device-list', devices || []);
     });
 
     // 打开项目目录
