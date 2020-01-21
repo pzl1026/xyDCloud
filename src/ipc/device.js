@@ -4,7 +4,8 @@ const {STORE_PREFIX, DEVICE_ACTION_FEILDS, VIDEO_ACTION_FEILDS, DEVICE_VIDEO_ACT
 const _ = require('lodash');
 const StreamDownload = require('../helper/download2');
 const {shell} = require("electron");
-const {getIPAdress} = require('../helper/ip');
+const {getIPAdress, getVlan} = require('../helper/ip');
+const pinging = require('../helper/ping');
 
 
 // 定义回调函数
@@ -158,27 +159,27 @@ function clearLoop() {
 !(function ipcDevice() {
     // 该事件项目页面监听 轮询监听是否文件更新
     ipcMain.on('post-ip-address', (event, data) => {
-        // 获取已设置的项目任务
+        // 获取本机IP
         const myHost = getIPAdress();
 
         event.reply('get-ip-address', myHost);
     });
 
     ipcMain.on('start-download', (event, data) => {
-        // 获取已设置的项目任务
+        // 开始下载
         startDownload();
 
         event.reply('get-ip-address', myHost);
     });
 
     ipcMain.on('save-device', (event, device) => {
-        // 获取已设置的项目任务
+        // 保存设备
         let devices = saveDevice(device);
         event.reply('render-device', devices);
     });
 
     ipcMain.on('get-devices', (event) => {
-        // 获取已设置的项目任务
+        // 获取设备
         let devices = getDevices();
         event.reply('render-device-list', devices);
     });
@@ -209,7 +210,7 @@ function clearLoop() {
         event.reply('render-device-list', devices);
     });
 
-    // 设置项目目录
+    // 设置设备视频
     ipcMain.on('save-device-videos', (event, data) => {
         let videos = saveDevicesVideos(data);
         event.reply('render-device-videos', videos);
@@ -225,6 +226,25 @@ function clearLoop() {
             event.reply('render-device-videos', videos);
         });
 
+    // 获取可用设备
+    ipcMain.on('post-can-devices', (event) => {
+        console.log(2222)
+        let devicesIps = [];
+        pinging(getVlan(), {
+            pingCb: () => {},
+            pingStatusCb: () => {},
+            pingStatusSuccess: (host) => {
+                console.log(host, 'host');
+                devicesIps.push(host);
+                // event.reply('complete-devices-search', videos);
+            },
+            pingAllStatusCb: () => {
+                console.log('状态获取完成');
+                event.reply('complete-devices-search', devicesIps);
+            }
+        });
+        // event.reply('render-device-videos', videos);
+    });
 
 
 

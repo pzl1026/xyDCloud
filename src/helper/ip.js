@@ -13,6 +13,12 @@ function getIPAdress() {
     }
 }
 
+function getVlan() {
+    let host = getIPAdress();
+    return host.substr(0, host.lastIndexOf('.')) + '.';
+}
+
 module.exports = {
+    getVlan,
     getIPAdress
-};
+}
