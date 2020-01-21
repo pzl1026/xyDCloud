@@ -8,16 +8,13 @@ const {getIPAdress, getVlan} = require('../helper/ip');
 const pinging = require('../helper/ping');
 
 
-// 定义回调函数
-function downloadFileCallback(arg, percentage)
-{
+// 定义下载成功或者下载中回调函数
+function downloadFileCallback(arg, percentage) {
     if (arg === "progress")
     {
         console.log(percentage, 'percentage');
         // 显示进度
-    }
-    else if (arg === "finished")
-    {   
+    } else if (arg === "finished"){   
         // 通知完成
         console.log('下载成功');
         let userStore = store.get(STORE_PREFIX + USER_ID);
@@ -32,7 +29,25 @@ function downloadFileCallback(arg, percentage)
                 });
             }
         });
+        store.set(STORE_PREFIX + USER_ID, userStore);
     }
+}
+
+// 定义下载失败的回调
+function downloadErrorCallback (err, msg) {
+    let userStore = store.get(STORE_PREFIX + USER_ID);
+    userStore.devices.forEach(item => {
+        if(DOWNLOADING_DEVICE_VIDEO.ip == item.ip) {
+            item['media-files'].forEach(m => {
+                if (DOWNLOADING_DEVICE_VIDEO.kbps === m.kbps) {
+                    m.isFail = true;
+                    m.failReason = msg;
+                    m.failTime = new Date().valueOf();
+                }
+            });
+        }
+    });
+    store.set(STORE_PREFIX + USER_ID, userStore);
 }
 
 function startDownload() {

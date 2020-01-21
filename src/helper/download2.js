@@ -17,9 +17,10 @@ StreamDownload.prototype.showProgress = function (received, total) {
 };
 
 // 下载过程
-StreamDownload.prototype.downloadFile = function (patchUrl, baseDir, filename, callback) {
+StreamDownload.prototype.downloadFile = function (patchUrl, baseDir, filename, callback, errorBack) {
 
   this.downloadCallback = callback; // 注册回调函数
+  this.downloadErrorCallback = errorBack;
 
   const downloadFile = filename; // 下载文件名称，也可以从外部传进来
 
@@ -35,6 +36,10 @@ StreamDownload.prototype.downloadFile = function (patchUrl, baseDir, filename, c
   req.pipe(out);
 
   req.on('response', (data) => {
+    if (data.statusCode != 200) {
+      this.downloadErrorCallback(data, '404:该文件不存在');
+      return;
+    }
     // 更新总文件字节大小
     totalBytes = parseInt(data.headers['content-length'], 10);
   });
