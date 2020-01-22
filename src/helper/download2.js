@@ -17,7 +17,13 @@ StreamDownload.prototype.showProgress = function (received, total) {
 };
 
 // 下载过程
-StreamDownload.prototype.downloadFile = function (patchUrl, baseDir, filename, callback, errorBack) {
+StreamDownload.prototype.downloadFile = function (
+  patchUrl, 
+  baseDir, 
+  filename, 
+  callback = () => {}, 
+  errorBack = () => {}
+) {
 
   this.downloadCallback = callback; // 注册回调函数
   this.downloadErrorCallback = errorBack;

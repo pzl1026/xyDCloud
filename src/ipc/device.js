@@ -30,6 +30,9 @@ function downloadFileCallback(arg, percentage) {
             }
         });
         store.set(STORE_PREFIX + USER_ID, userStore);
+        setTimeout(() => {
+            startDownload();
+        }, 2000);
     }
 }
 
@@ -55,15 +58,15 @@ function startDownload() {
     let userStore = store.get(STORE_PREFIX + USER_ID);
     let device = userStore.devices.find(item => !item.isPause);
     if(device) {
-        let video = device['media-files'].find(m => m.needDownload);
+        let video = device['media-files'].find(m => m.needDownload && !m.isSuccess);
         if (video) {
             DOWNLOADING_DEVICE_VIDEO = {
                 ip: device.ip,
-                localPath: sdevice.localPath,
+                localPath: device.localPath,
                 ...video
             };
             // todo:: 进行网络判断，进行容量判断，进行设备状态判断
-            
+            console.log(video, 'video')
             // 调用下载
             StreamDownload2.downloadFile(video.downpath, device.localPath, video.name, downloadFileCallback);
         } else {
@@ -82,7 +85,6 @@ function setDownloadVideoInfo () {
 function saveDevicesVideos(data) {
     const store = attrs.STORE;
     let userStore = store.get(STORE_PREFIX + USER_ID);
-    console.log(userStore.devices, 'userStore.devices');
     userStore.devices = userStore.devices.map(item => {
         if (item.ip == data.ip) {
             data.videos.forEach(m => {
@@ -98,7 +100,6 @@ function saveDevicesVideos(data) {
         return item;
     });
     store.set(STORE_PREFIX + USER_ID, userStore);
-    console.log(userStore.devices, data, 'data')
     return userStore.devices.find(m => m.ip == data.ip)['media-files'];
 }
 
@@ -121,7 +122,6 @@ function changeDevicesVideosDownload(data) {
 
 // 保存设备
 function saveDevice (device) {
-    // console.log(device, 'saveDevice')
     const store = attrs.STORE;
     let userStore = store.get(STORE_PREFIX + USER_ID);
     if (!userStore.devices) {
@@ -184,7 +184,10 @@ function clearLoop() {
 
     ipcMain.on('start-download', (event, data) => {
         // 开始下载
-        startDownload();
+        if (!IS_DEVICE_DOWNLOADING) {
+            IS_DEVICE_DOWNLOADING = true;
+            startDownload();
+        }
 
         event.reply('get-ip-address', myHost);
     });
@@ -245,7 +248,6 @@ function clearLoop() {
 
     // 获取可用设备
     ipcMain.on('post-can-devices', (event) => {
-        console.log(2222)
         let devicesIps = [];
         pinging(getVlan(), {
             pingCb: () => {},
