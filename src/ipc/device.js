@@ -82,12 +82,13 @@ function setDownloadVideoInfo () {
 function saveDevicesVideos(data) {
     const store = attrs.STORE;
     let userStore = store.get(STORE_PREFIX + USER_ID);
+    console.log(userStore.devices, 'userStore.devices');
     userStore.devices = userStore.devices.map(item => {
         if (item.ip == data.ip) {
             data.videos.forEach(m => {
                 let isset = item['media-files'].find(n => n.kbps == m.kbps);
                 if (!isset) {
-                    item['media-files'].unshift({
+                    item['media-files'].push({
                         ...m,
                         ...DEVICE_VIDEO_ACTION_FEILDS
                     });
@@ -97,6 +98,7 @@ function saveDevicesVideos(data) {
         return item;
     });
     store.set(STORE_PREFIX + USER_ID, userStore);
+    console.log(userStore.devices, data, 'data')
     return userStore.devices.find(m => m.ip == data.ip)['media-files'];
 }
 
