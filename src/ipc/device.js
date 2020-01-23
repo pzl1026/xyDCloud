@@ -20,10 +20,12 @@ function downloadFileCallback(arg, percentage) {
         let userStore = store.get(STORE_PREFIX + USER_ID);
         userStore.devices.forEach(item => {
             if(DOWNLOADING_DEVICE_VIDEO.ip == item.ip) {
+                let successTime = new Date().valueOf();
+                item.successTime = successTime;
                 item['media-files'].forEach(m => {
                     if (DOWNLOADING_DEVICE_VIDEO.kbps === m.kbps) {
                         m.isSuccess = true;
-                        m.successTime = new Date().valueOf();
+                        m.successTime = successTime;
                         m.downloadProgress = 1;
                     }
                 });
@@ -37,10 +39,11 @@ function downloadFileCallback(arg, percentage) {
 }
 
 // 定义下载失败的回调
-function downloadErrorCallback (err, msg) {
+function downloadErrorCallback (err, msg, statusCode) {
     let userStore = store.get(STORE_PREFIX + USER_ID);
     userStore.devices.forEach(item => {
         if(DOWNLOADING_DEVICE_VIDEO.ip == item.ip) {
+            item.failReason = DOWNLOADING_DEVICE_VIDEO.name + msg;
             item['media-files'].forEach(m => {
                 if (DOWNLOADING_DEVICE_VIDEO.kbps === m.kbps) {
                     m.isFail = true;
@@ -58,7 +61,7 @@ function startDownload() {
     let userStore = store.get(STORE_PREFIX + USER_ID);
     let device = userStore.devices.find(item => !item.isPause);
     if(device) {
-        let video = device['media-files'].find(m => m.needDownload && !m.isSuccess);
+        let video = device['media-files'].find(m => m.needDownload && !m.isSuccess && !m.isFail);
         if (video) {
             DOWNLOADING_DEVICE_VIDEO = {
                 ip: device.ip,
@@ -68,7 +71,7 @@ function startDownload() {
             // todo:: 进行网络判断，进行容量判断，进行设备状态判断
             console.log(video, 'video')
             // 调用下载
-            StreamDownload2.downloadFile(video.downpath, device.localPath, video.name, downloadFileCallback);
+            StreamDownload2.downloadFile(video.downpath, device.localPath, video.name, downloadFileCallback, downloadErrorCallback);
         } else {
             IS_DEVICE_DOWNLOADING = false;
         }
@@ -244,6 +247,12 @@ function clearLoop() {
                 startDownload();
             }
             event.reply('render-device-videos', videos);
+        });
+
+        // 获取所有设备视频
+        ipcMain.on('post-devices-videos', (event, data) => {
+            let userStore = store.get(STORE_PREFIX + USER_ID);
+            event.reply('get-devices-videos',  userStore.devices);
         });
 
     // 获取可用设备

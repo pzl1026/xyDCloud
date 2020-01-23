@@ -23,8 +23,8 @@ const DEVICE_ACTION_FEILDS = {
     localPath: '', //所映射的本地文件夹,
     fialMsg: '',    //文件下载失败原因
     successTime: '', //设备文件全部下载成功时间
-    downloadCount: 0,   //设备正在下载的文件数
-    downloadSuccessCount: 0 //设备已经成功下载的数量
+    // downloadCount: 0,   //设备正在下载的文件数
+    // downloadSuccessCount: 0 //设备已经成功下载的数量
 };
 
 // 设备文件字段

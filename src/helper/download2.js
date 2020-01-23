@@ -43,7 +43,7 @@ StreamDownload.prototype.downloadFile = function (
 
   req.on('response', (data) => {
     if (data.statusCode != 200) {
-      this.downloadErrorCallback(data, '404:该文件不存在');
+      this.downloadErrorCallback(data, '404:该文件不存在', data.statusCode);
       return;
     }
     // 更新总文件字节大小
