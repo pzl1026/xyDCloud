@@ -7,30 +7,30 @@ const {shell} = require("electron");
 const {getIPAdress, getVlan} = require('../helper/ip');
 const pinging = require('../helper/ping');
 
-
 // 定义下载成功或者下载中回调函数
 function downloadFileCallback(arg, percentage) {
-    if (arg === "progress")
-    {
+    if (arg === "progress") {
         console.log(percentage, 'percentage');
         // 显示进度
-    } else if (arg === "finished"){   
+    } else if (arg === "finished") {
         // 通知完成
         console.log('下载成功');
         let userStore = store.get(STORE_PREFIX + USER_ID);
-        userStore.devices.forEach(item => {
-            if(DOWNLOADING_DEVICE_VIDEO.ip == item.ip) {
-                let successTime = new Date().valueOf();
-                item.successTime = successTime;
-                item['media-files'].forEach(m => {
-                    if (DOWNLOADING_DEVICE_VIDEO.kbps === m.kbps) {
-                        m.isSuccess = true;
-                        m.successTime = successTime;
-                        m.downloadProgress = 1;
-                    }
-                });
-            }
-        });
+        userStore
+            .devices
+            .forEach(item => {
+                if (DOWNLOADING_DEVICE_VIDEO.ip == item.ip) {
+                    let successTime = new Date().valueOf();
+                    item.successTime = successTime;
+                    item['media-files'].forEach(m => {
+                        if (DOWNLOADING_DEVICE_VIDEO.kbps === m.kbps) {
+                            m.isSuccess = true;
+                            m.successTime = successTime;
+                            m.downloadProgress = 1;
+                        }
+                    });
+                }
+            });
         store.set(STORE_PREFIX + USER_ID, userStore);
         setTimeout(() => {
             startDownload();
@@ -39,28 +39,32 @@ function downloadFileCallback(arg, percentage) {
 }
 
 // 定义下载失败的回调
-function downloadErrorCallback (err, msg, statusCode) {
+function downloadErrorCallback(err, msg, statusCode) {
     let userStore = store.get(STORE_PREFIX + USER_ID);
-    userStore.devices.forEach(item => {
-        if(DOWNLOADING_DEVICE_VIDEO.ip == item.ip) {
-            item.failReason = DOWNLOADING_DEVICE_VIDEO.name + msg;
-            item['media-files'].forEach(m => {
-                if (DOWNLOADING_DEVICE_VIDEO.kbps === m.kbps) {
-                    m.isFail = true;
-                    m.failReason = msg;
-                    m.failTime = new Date().valueOf();
-                }
-            });
-        }
-    });
+    userStore
+        .devices
+        .forEach(item => {
+            if (DOWNLOADING_DEVICE_VIDEO.ip == item.ip) {
+                item.failReason = DOWNLOADING_DEVICE_VIDEO.name + msg;
+                item['media-files'].forEach(m => {
+                    if (DOWNLOADING_DEVICE_VIDEO.kbps === m.kbps) {
+                        m.isFail = true;
+                        m.failReason = msg;
+                        m.failTime = new Date().valueOf();
+                    }
+                });
+            }
+        });
     store.set(STORE_PREFIX + USER_ID, userStore);
 }
 
 function startDownload() {
     const StreamDownload2 = new StreamDownload();
     let userStore = store.get(STORE_PREFIX + USER_ID);
-    let device = userStore.devices.find(item => !item.isPause);
-    if(device) {
+    let device = userStore
+        .devices
+        .find(item => !item.isPause);
+    if (device) {
         let video = device['media-files'].find(m => m.needDownload && !m.isSuccess && !m.isFail);
         if (video) {
             DOWNLOADING_DEVICE_VIDEO = {
@@ -80,86 +84,102 @@ function startDownload() {
     }
 }
 
-function setDownloadVideoInfo () {
-    // 
+function setDownloadVideoInfo() {
+    //
 }
 
 // 保存视频的信息，并新增可操作字段
 function saveDevicesVideos(data) {
     const store = attrs.STORE;
     let userStore = store.get(STORE_PREFIX + USER_ID);
-    userStore.devices = userStore.devices.map(item => {
-        if (item.ip == data.ip) {
-            data.videos.forEach(m => {
-                let isset = item['media-files'].find(n => n.kbps == m.kbps);
-                if (!isset) {
-                    item['media-files'].push({
-                        ...m,
-                        ...DEVICE_VIDEO_ACTION_FEILDS
+    userStore.devices = userStore
+        .devices
+        .map(item => {
+            if (item.ip == data.ip) {
+                data
+                    .videos
+                    .forEach(m => {
+                        let isset = item['media-files'].find(n => n.kbps == m.kbps);
+                        if (!isset) {
+                            item['media-files'].push({
+                                ...m,
+                                ...DEVICE_VIDEO_ACTION_FEILDS
+                            });
+                        }
                     });
-                }
-            });
-        }
-        return item;
-    });
+            }
+            return item;
+        });
     store.set(STORE_PREFIX + USER_ID, userStore);
-    return userStore.devices.find(m => m.ip == data.ip)['media-files'];
+    return userStore
+        .devices
+        .find(m => m.ip == data.ip)['media-files'];
 }
 
 function changeDevicesVideosDownload(data) {
     const store = attrs.STORE;
     let userStore = store.get(STORE_PREFIX + USER_ID);
-    userStore.devices = userStore.devices.map(item => {
-        if (item.ip == data.ip) {
-            item['media-files'].forEach(m => {
-                if (data.videosKbps.includes(m.kbps)) {
-                    m.needDownload = true;
-                }
-            });
-        }
-        return item;
-    });
+    userStore.devices = userStore
+        .devices
+        .map(item => {
+            if (item.ip == data.ip) {
+                item['media-files'].forEach(m => {
+                    if (data.videosKbps.includes(m.kbps)) {
+                        m.needDownload = true;
+                    }
+                });
+            }
+            return item;
+        });
     store.set(STORE_PREFIX + USER_ID, userStore);
-    return userStore.devices.find(m => m.ip == data.ip)['media-files'];
+    return userStore
+        .devices
+        .find(m => m.ip == data.ip)['media-files'];
 }
 
 // 保存设备
-function saveDevice (device) {
+function saveDevice(device) {
     const store = attrs.STORE;
     let userStore = store.get(STORE_PREFIX + USER_ID);
     if (!userStore.devices) {
         userStore.devices = [];
     }
-    userStore.devices.push(Object.assign({}, device, DEVICE_ACTION_FEILDS));
+    userStore
+        .devices
+        .push(Object.assign({}, device, DEVICE_ACTION_FEILDS));
     store.set(STORE_PREFIX + USER_ID, userStore);
     return userStore.devices;
 }
 
 // 保存路径
-function setDeviceLocalpath(ip, localPath){
+function setDeviceLocalpath(ip, localPath) {
     const store = attrs.STORE;
     let userStore = store.get(STORE_PREFIX + USER_ID);
-    userStore.devices = userStore.devices.map(item => {
-        if (item.ip == ip) {
-            item.localPath = localPath;
-        }
-        return item;
-    });
+    userStore.devices = userStore
+        .devices
+        .map(item => {
+            if (item.ip == ip) {
+                item.localPath = localPath;
+            }
+            return item;
+        });
     store.set(STORE_PREFIX + USER_ID, userStore);
     return userStore.devices;
 }
 
 // 删除设备
-function deleteDevice (ip) {
+function deleteDevice(ip) {
     const store = attrs.STORE;
     let userStore = store.get(STORE_PREFIX + USER_ID);
-    userStore.devices =  userStore.devices.filter(m => m.ip != ip);
+    userStore.devices = userStore
+        .devices
+        .filter(m => m.ip != ip);
     store.set(STORE_PREFIX + USER_ID, userStore);
     return userStore.devices;
 }
 
 // 获取当前下载的设备
-function getDevices () {
+function getDevices() {
     const store = attrs.STORE;
     let userStore = store.get(STORE_PREFIX + USER_ID);
     return userStore.devices;
@@ -171,10 +191,7 @@ function loopStartDownload() {
 }
 
 // 账号登出，或软件退出取消群论监听
-function clearLoop() {
-
-}
-
+function clearLoop() {}
 
 !(function ipcDevice() {
     // 该事件项目页面监听 轮询监听是否文件更新
@@ -239,21 +256,21 @@ function clearLoop() {
         event.reply('render-device-videos', videos);
     });
 
-        // 选择视频下载
-        ipcMain.on('change-device-videos-download', (event, data) => {
-            let videos = changeDevicesVideosDownload(data);
-            if (!IS_DEVICE_DOWNLOADING) {
-                IS_DEVICE_DOWNLOADING = true;
-                startDownload();
-            }
-            event.reply('render-device-videos', videos);
-        });
+    // 选择视频下载
+    ipcMain.on('change-device-videos-download', (event, data) => {
+        let videos = changeDevicesVideosDownload(data);
+        if (!IS_DEVICE_DOWNLOADING) {
+            IS_DEVICE_DOWNLOADING = true;
+            startDownload();
+        }
+        event.reply('render-device-videos', videos);
+    });
 
-        // 获取所有设备视频
-        ipcMain.on('post-devices-videos', (event, data) => {
-            let userStore = store.get(STORE_PREFIX + USER_ID);
-            event.reply('get-devices-videos',  userStore.devices);
-        });
+    // 获取所有设备视频
+    ipcMain.on('post-devices-videos', (event, data) => {
+        let userStore = store.get(STORE_PREFIX + USER_ID);
+        event.reply('get-devices-videos', userStore.devices);
+    });
 
     // 获取可用设备
     ipcMain.on('post-can-devices', (event) => {
@@ -274,6 +291,23 @@ function clearLoop() {
         // event.reply('render-device-videos', videos);
     });
 
+    // 改变是否暂停下载
+    ipcMain.on('change-device-pause-status', (event, ip) => {
+        console.log(ip, 'lll')
+        // 对某个项目的路径进行设置
+        let userStore = store.get(STORE_PREFIX + USER_ID);
 
+        userStore.devices = userStore
+            .devices
+            .map(item => {
+                if (item.ip == ip) {
+                    item.isPause = !item.isPause;
+                }
+                return item;
+            });
+
+        store.set(STORE_PREFIX + USER_ID, userStore);
+        event.reply('render-device', userStore.devices);
+    });
 
 })();
