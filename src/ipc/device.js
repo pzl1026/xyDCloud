@@ -272,9 +272,18 @@ function clearLoop() {}
         event.reply('get-devices-videos', userStore.devices);
     });
 
+     // 获取是否正在搜索设备状态
+     ipcMain.on('post-devices-searching', (event) => {
+        event.reply('get-devices-searching', DEVICE_SEARCHING);
+    });
+
     // 获取可用设备
     ipcMain.on('post-can-devices', (event) => {
         let devicesIps = [];
+        if(DEVICE_SEARCHING) {
+            return;
+        }
+        DEVICE_SEARCHING = true;
         pinging(getVlan(), {
             pingCb: () => {},
             pingStatusCb: () => {},
@@ -285,6 +294,7 @@ function clearLoop() {}
             },
             pingAllStatusCb: () => {
                 console.log('状态获取完成');
+                DEVICE_SEARCHING = false;
                 event.reply('complete-devices-search', devicesIps);
             }
         });
@@ -293,7 +303,6 @@ function clearLoop() {}
 
     // 改变是否暂停下载
     ipcMain.on('change-device-pause-status', (event, ip) => {
-        console.log(ip, 'lll')
         // 对某个项目的路径进行设置
         let userStore = store.get(STORE_PREFIX + USER_ID);
 

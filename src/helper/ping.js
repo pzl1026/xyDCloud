@@ -25,9 +25,31 @@ const pinging = (function () {
             let host = vlan + i;
             hosts.push(host);
         }
-        
+        // hosts.forEach(function(host){
+        //     ping.sys.probe(host, function(isAlive){
+        //         console.log(host, isAlive, 'isAlive')
+        //         pingCount++;
+        //         if (isAlive) {
+        //             hostAlives.push(host);
+        //         }
+        //         pingCb();
+        //         console.log(pingCount, ipsLength, 'ipsLength')
+        //         if (pingCount >= ipsLength - 1) {
+        //             console.log(9999)
+        //             if (hostAlives.length == 0) {
+        //                 hosts = [];
+        //                 hostAlives = [];
+        //                 pingCount = 0;
+        //                 requestCount = 0;
+        //                 pingAllStatusCb();
+        //             } else {
+        //                 requestHostApi(hostAlives[0]);
+        //             }
+
+        //         }
+        //     });
+        // });
         hosts.forEach(function (host) {
-        
             ping.promise.probe(host, {
                 timeout: 10,
                 // extra: ["-i 2"],
@@ -39,6 +61,10 @@ const pinging = (function () {
                 pingCb();
                 if (pingCount >= ipsLength - 1) {
                     if (hostAlives.length == 0) {
+                        hosts = [];
+                        hostAlives = [];
+                        pingCount = 0;
+                        requestCount = 0;
                         pingAllStatusCb();
                     } else {
                         requestHostApi(hostAlives[0]);
@@ -46,27 +72,16 @@ const pinging = (function () {
 
                 }
             });
-            // ping.sys.probe(host, function(isAlive){
-            //     var msg = isAlive ? 'host ' + host + ' is alive' : 'host ' + host + ' is dead';
-            //     console.log(msg);
-            //     pingCount++;
-            //     if (isAlive) {
-            //         hostAlives.push(host);
-            //     }
-            //     if (pingCount >= 99) {
-            //         console.log(hostAlives, 'hostAlives')
-            //         requestHostApi(hostAlives[0])
-            //     }
-            // },{
-            //     timeout: 100,
-            //     extra: ["-i 2"],
-            // });
         });
     }
     
     function requestHostApi(host) {
-        // console.log(requestCount, hostAlives, 'requestCount')
+        // console.log(requestCount, hostAlives.length, 'requestCount')
         if (requestCount == hostAlives.length) {
+            hosts = [];
+            hostAlives = [];
+            pingCount = 0;
+            requestCount = 0;
             pingAllStatusCb();
             return;
         }

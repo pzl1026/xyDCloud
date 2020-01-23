@@ -27,6 +27,7 @@ var globalInit = (function () {
         global.DOWNLOADING_VIDEO = null;
         global.DOWNLOADING_DEVICE_VIDEO = null;
         global.NEED_LOOP_DOWNLOAD = null;
+        global.DEVICE_SEARCHING = false;
     };
 })();
 
