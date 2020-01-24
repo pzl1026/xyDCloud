@@ -22,13 +22,14 @@ function createWindow () {
     minHeight: 800,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
-      nodeIntegration: true
+      nodeIntegration: true,
+      webSecurity: false
     }
   })
 
   // and load the index.html of the app.
-  // mainWindow.loadFile('./index.html')
-  mainWindow.loadURL("http://localhost:8001/");
+  // mainWindow.loadFile('./dist/index.html')
+  mainWindow.loadURL("http://localhost:8001");
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
