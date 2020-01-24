@@ -22,11 +22,14 @@ function downloadFileCallback(arg, percentage) {
                 if (DOWNLOADING_DEVICE_VIDEO.ip == item.ip) {
                     let successTime = new Date().valueOf();
                     item.successTime = successTime;
+                    item.failReason = '';
                     item['media-files'].forEach(m => {
                         if (DOWNLOADING_DEVICE_VIDEO.kbps === m.kbps) {
                             m.isSuccess = true;
                             m.successTime = successTime;
                             m.downloadProgress = 1;
+                            m.isFail = false;
+                            m.failReason = '';
                         }
                     });
                 }
@@ -45,7 +48,7 @@ function downloadErrorCallback(err, msg, statusCode) {
         .devices
         .forEach(item => {
             if (DOWNLOADING_DEVICE_VIDEO.ip == item.ip) {
-                item.failReason = DOWNLOADING_DEVICE_VIDEO.name + msg;
+                item.failReason = DOWNLOADING_DEVICE_VIDEO.name + '  '+ msg;
                 item['media-files'].forEach(m => {
                     if (DOWNLOADING_DEVICE_VIDEO.kbps === m.kbps) {
                         m.isFail = true;
