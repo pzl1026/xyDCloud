@@ -76,7 +76,7 @@ function startDownload() {
                 ...video
             };
             // todo:: 进行网络判断，进行容量判断，进行设备状态判断
-            console.log(video, 'video')
+            
             // 调用下载
             StreamDownload2.downloadFile(video.downpath, device.localPath, video.name, downloadFileCallback, downloadErrorCallback);
         } else {
@@ -291,7 +291,7 @@ function clearLoop() {}
             pingCb: () => {},
             pingStatusCb: () => {},
             pingStatusSuccess: (host) => {
-                console.log(host, 'host');
+                // console.log(host, 'host');
                 devicesIps.push(host);
                 // event.reply('complete-devices-search', videos);
             },

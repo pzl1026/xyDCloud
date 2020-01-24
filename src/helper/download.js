@@ -163,7 +163,7 @@ function startDownloading() {
 
 function loopDownload() {
     NEED_LOOP_DOWNLOAD = setInterval(() => {
-        console.log(IS_PROJECT_DOWNLOADING, 'NEED_LOOP_DOWNLOAD')
+        // console.log(IS_PROJECT_DOWNLOADING, 'NEED_LOOP_DOWNLOAD')
         if (IS_PROJECT_DOWNLOADING) 
             return;
         IS_PROJECT_DOWNLOADING = true;

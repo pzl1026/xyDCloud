@@ -42,8 +42,6 @@ StreamDownload.prototype.downloadFile = function (
   req.pipe(out);
 
   req.on('response', (data) => {
-    console.log(data.statusCode, 'data.statusCode')
-
     if (data.statusCode != 200) {
       this.downloadErrorCallback(data, '404:该文件不存在', data.statusCode);
       return;

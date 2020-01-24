@@ -4,12 +4,10 @@ const { ipcMain } = require('electron');
 function ipcInit() {
 
     ipcMain.on('asynchronous-message', (event, arg) => {
-        console.log(arg) // prints "ping"
         event.reply('asynchronous-reply', 'pong')
     })
       
     ipcMain.on('synchronous-message', (event, arg) => {
-        console.log(arg) // prints "ping"
         event.returnValue = 'pong'
     })
 
@@ -24,11 +22,9 @@ function ipcInit() {
     ipcMain.on('save-user', (event, data) => {
         // 登录触发逻辑处理
         // 存储登录信息到store，成功之后跳转页面
-        console.log(data, '666')
         const store = global.attrs.STORE;
         // store.delete('user_' + data.id);
         store.set('user_' + data.id, data);
-        console.log(store.get('user_' + data.id), 'ooo');
 
         // 登录了之后，将个人信息发送到页面
         // event.reply('reply-user', 'pong')

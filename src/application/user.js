@@ -11,10 +11,8 @@ function storeUser(info) {
         for (let k in info) {
             userStore[k] = info[k];
         }
-        console.log(STORE_PREFIX + info.login_id, 'STORE_PREFIX + info.id1')
         store.set(STORE_PREFIX + info.login_id, userStore);
     } else {
-        console.log(STORE_PREFIX + info.login_id, 'STORE_PREFIX + info.id2')
         store.set(STORE_PREFIX + info.login_id, info);
     }
 }
