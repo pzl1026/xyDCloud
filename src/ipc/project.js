@@ -187,7 +187,6 @@ function saveProjectPath(data) {
     // 删除某个已创建的项目任务
     ipcMain.on('delete-project', (event, projectId) => {
         let userStore = store.get(STORE_PREFIX + USER_ID);
-        console.log(projectId, 'projectId')
         userStore
             .projects
             .forEach(item => {

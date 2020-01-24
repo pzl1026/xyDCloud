@@ -21,7 +21,6 @@ const {loopDownload} = require('../helper/download');
         global.USER_INFO = userInfo;
         global.USER_ID = data.login_id;
         loopDownload();
-      
         // 登录了之后，将个人信息发送到页面
         event.reply('store-client-user', data);
     });
@@ -29,7 +28,6 @@ const {loopDownload} = require('../helper/download');
     ipcMain.on('clear-loop', (event, data) => {
         clearInterval(NEED_LOOP_DOWNLOAD);
         NEED_LOOP_DOWNLOAD = null;
-        USER_ID = '';
         event.reply('login-out');
     });
 })();

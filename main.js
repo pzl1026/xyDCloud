@@ -95,8 +95,10 @@ app.on('window-all-closed', function () {
   
   // 清除设备
   let userStore = store.get(STORE_PREFIX + USER_ID);
-  userStore.devices = [];
-  store.set(STORE_PREFIX + USER_ID, userStore);
+  if (userStore) {
+    userStore.devices = [];
+    store.set(STORE_PREFIX + USER_ID, userStore);
+  }
 })
 
 app.on('activate', function () {

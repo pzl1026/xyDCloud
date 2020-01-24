@@ -322,7 +322,7 @@ function clearLoop() {}
         event.reply('render-device', userStore.devices);
     });
 
-    ipcMain.on('clear-devices', (event, ip) => {
+    ipcMain.on('clear-devices', (event) => {
         let userStore = store.get(STORE_PREFIX + USER_ID);
         userStore.devices = [];
         store.set(STORE_PREFIX + USER_ID, userStore);
