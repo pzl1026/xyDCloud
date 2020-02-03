@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const {STORE_PREFIX} = require('../config/store');
+const { Notification } = require('electron');
 // const disk = require('diskusage'); const os = require('os');
 // getFreeSpace('/');
 

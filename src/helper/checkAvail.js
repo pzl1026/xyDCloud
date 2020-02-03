@@ -49,10 +49,10 @@ function getAvailVolumn(fn) {
             });
             allDisc.push(o);
         }
-        // console.log(allDisc, 'ar\n');
+        console.log(allDisc, 'ar\n');
         if (os.type() == 'Darwin') {
-            let avial = allDisc[0].avial;
-            fn && fn(avial);
+            let avail = allDisc[0].avail;
+            fn && fn(avail);
         } else {
             fn && fn(allDisc);
         }

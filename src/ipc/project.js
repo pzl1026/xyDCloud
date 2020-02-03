@@ -203,7 +203,8 @@ function saveProjectPath(data) {
     // 获取所有的曾经下载过的跟即将下载以及失败的视频
     ipcMain.on('post-all-videos', (event, projectId) => {
         let userStore = store.get(STORE_PREFIX + USER_ID);
-        let videos = []
+        let videos = [];
+        if (!userStore.projects) return;
         userStore
             .projects
             .forEach(item => {

@@ -1,8 +1,9 @@
-const {ipcMain, dialog} = require('electron');
+const {ipcMain, dialog, Notification} = require('electron');
 const user = require('../application/user');
 const {STORE_PREFIX, DEVICE_ACTION_FEILDS, VIDEO_ACTION_FEILDS, DEVICE_VIDEO_ACTION_FEILDS} = require('../config/store');
 const _ = require('lodash');
 const StreamDownload = require('../helper/download2');
+const checkAllowDown = require('../helper/checkAllowDown');
 const {shell} = require("electron");
 const {getIPAdress, getVlan} = require('../helper/ip');
 const pinging = require('../helper/ping');
@@ -62,23 +63,44 @@ function downloadErrorCallback(err, msg, statusCode) {
 }
 
 function startDownload() {
-    const StreamDownload2 = new StreamDownload();
     let userStore = store.get(STORE_PREFIX + USER_ID);
     let device = userStore
         .devices
         .find(item => !item.isPause);
-    if (device) {
+        console.log(LINE_STATUS, 'LINE_STATUS')
+    if (device && LINE_STATUS) {
         let video = device['media-files'].find(m => m.needDownload && !m.isSuccess && !m.isFail);
+        console.log('1111')
         if (video) {
+            console.log('6666')
             DOWNLOADING_DEVICE_VIDEO = {
                 ip: device.ip,
+                deviceName: device.product['product-name'],
                 localPath: device.localPath,
                 ...video
             };
-            // todo:: 进行网络判断，进行容量判断，进行设备状态判断
-            
-            // 调用下载
-            StreamDownload2.downloadFile(video.downpath, device.localPath, video.name, downloadFileCallback, downloadErrorCallback);
+            // todo:: 进行容量判断，进行设备状态判断
+            checkAllowDown(video.size, device.localPath)
+            .then(() => {
+                console.log('kaishixiazai')
+                VOLUMN_NOTICE_TIMER = null;
+                event.reply('check-device-status', DOWNLOADING_DEVICE_VIDEO);
+            }, (disc) => {
+                console.log('buneng')
+                IS_DEVICE_DOWNLOADING = false;
+                if (VOLUMN_NOTICE_TIMER) {
+                    return;
+                }
+                VOLUMN_NOTICE_TIMER = setTimeout(() => {
+                    VOLUMN_NOTICE_TIMER = null;
+                }, 300000)
+                if (!Notification.isSupported()) return;
+                let notification = new Notification({title: '新阅', subtitleString:'提示', body: `系统${disc}容量不够，请保证有足够的下载容量，且不能小于1G`});
+                notification.show();
+            });
+            // // 调用下载
+            // const StreamDownload2 = new StreamDownload();
+            // StreamDownload2.downloadFile(video.downpath, device.localPath, video.name, downloadFileCallback, downloadErrorCallback);
         } else {
             IS_DEVICE_DOWNLOADING = false;
         }
@@ -147,10 +169,12 @@ function saveDevice(device) {
     if (!userStore.devices) {
         userStore.devices = [];
     }
-    userStore
-        .devices
-        .push(Object.assign({}, device, DEVICE_ACTION_FEILDS));
-    store.set(STORE_PREFIX + USER_ID, userStore);
+    if (!userStore.devices.find(m => m.ip == device.ip)) {
+        userStore
+            .devices
+            .push(Object.assign({}, device, DEVICE_ACTION_FEILDS));
+        store.set(STORE_PREFIX + USER_ID, userStore);
+    }
     return userStore.devices;
 }
 
@@ -193,7 +217,7 @@ function loopStartDownload() {
     // 判断是否全局暂停，
 }
 
-// 账号登出，或软件退出取消群论监听
+// 账号登出，或软件退出取消轮询监听
 function clearLoop() {}
 
 !(function ipcDevice() {
@@ -209,6 +233,7 @@ function clearLoop() {}
         // 开始下载
         if (!IS_DEVICE_DOWNLOADING) {
             IS_DEVICE_DOWNLOADING = true;
+            console.log(222222)
             startDownload();
         }
 
@@ -264,7 +289,7 @@ function clearLoop() {}
         let videos = changeDevicesVideosDownload(data);
         if (!IS_DEVICE_DOWNLOADING) {
             IS_DEVICE_DOWNLOADING = true;
-            startDownload();
+            startDownload(event);
         }
         event.reply('render-device-videos', videos);
     });
@@ -328,4 +353,16 @@ function clearLoop() {}
         store.set(STORE_PREFIX + USER_ID, userStore);
     });
 
+    ipcMain.on('change-device-status', (event, data) => {
+        let deviceVideo = data.deviceVideo;
+        if(data.statusData.result == 0) {
+            // 调用下载
+            const StreamDownload2 = new StreamDownload();
+            StreamDownload2.downloadFile(deviceVideo.downpath, deviceVideo.localPath, deviceVideo.name, downloadFileCallback, downloadErrorCallback);
+        } else {
+            if (!Notification.isSupported()) return;
+            let notification = new Notification({title: '新阅', subtitleString:'提示', body: `请重新链接${deviceVideo.deviceName}设备`});
+            notification.show();
+        }
+    });
 })();

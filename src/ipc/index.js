@@ -32,6 +32,12 @@ function ipcInit() {
     //     event.reply('render-device', 'pong')
     // });
 
+    ipcMain.on('change-line-status', (event, status) => {
+        LINE_STATUS = status;
+        if (!Notification.isSupported() || status) return;
+        let notification = new Notification({title: '新阅', subtitleString:'提示', body: '网络已断开'});
+        notification.show();
+    });
 
     ipcMain.on('change-start-login', (event, openAtLogin) => {
     
