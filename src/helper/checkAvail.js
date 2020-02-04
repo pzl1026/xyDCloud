@@ -1,8 +1,8 @@
 var spawn = require('child_process').spawn;
 var os = require('os');
-free = spawn('df', ['-h']);
 
 function getAvailVolumn(fn) {
+    let free = spawn('df', ['-h']);
     // 捕获标准输出并将其打印到控制台
     free.stdout.on('data', function (data) {
         // console.log('standard output:\n' + data + '\n');
@@ -49,13 +49,23 @@ function getAvailVolumn(fn) {
             });
             allDisc.push(o);
         }
-        console.log(allDisc, 'ar\n');
+        // console.log(allDis/c, 'ar\n');
         if (os.type() == 'Darwin') {
             let avail = allDisc[0].avail;
             fn && fn(avail);
         } else {
             fn && fn(allDisc);
         }
+    });
+
+    // 捕获标准错误输出并将其打印到控制台
+    free.stderr.on('data', function (data) {
+    // console.log('standard error output:\n' + data);
+    });
+    
+    // 注册子进程关闭事件
+    free.on('exit', function (code, signal) {
+    // console.log('child process eixt ,exit:' + code);
     });
 }
 
@@ -84,14 +94,6 @@ function stringToUint8Array(str){
     return tmpUint8Array
   }
 
-// 捕获标准错误输出并将其打印到控制台
-free.stderr.on('data', function (data) {
-// console.log('standard error output:\n' + data);
-});
 
-// 注册子进程关闭事件
-free.on('exit', function (code, signal) {
-// console.log('child process eixt ,exit:' + code);
-});
 
 module.exports = getAvailVolumn;

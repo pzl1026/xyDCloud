@@ -7,10 +7,8 @@ function checkAllowAvailForMac(size) {
     return new Promise((resolve, reject) => {
         let avail = checkAvail();
         if(avail <= size + Math.pow(1024, 3)) {
-            console.log('88')
             reject();
         } else {
-            console.log('55')
             resolve();
         }
     })
@@ -32,26 +30,23 @@ function checkAllowAvailForWin(size, localPath, avail) {
 
 // 检查所有状态是否正常
 function checkAllowDown (size, localPath) {
-    console.log('ppp')
     return new Promise((resolve, reject) => {
         checkAvail((avail) => {
             if (os.type() == 'Darwin') {
-                console.log('9292')
-                checkAllowAvailForMac(size)
-                .then(() => {
-                    console.log('77')
-                    resolve();
-                }, () => {
-                    console.log('22')
+                if(avail <= size + Math.pow(1024, 3)) {
                     reject('');
-                });
-            } else {
-                checkAllowAvailForWin(size, localPath, avail)
-                .then(() => {
+                } else {
                     resolve();
-                }, () => {
+                }
+            } else {
+                let disc = localPath.substr(0, localPath.indexOf(':') + 1);
+                let availDisc = avail.find(n => n.mounted.indexOf(disc) > -1);
+                
+                if (size < availDisc.avail + Math.pow(1024, 3)) {
+                    resolve();
+                } else {
                     reject(disc);
-                })
+                }
             }
         });
     });
