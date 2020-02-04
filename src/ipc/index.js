@@ -1,19 +1,20 @@
 const { ipcMain, Notification, app } = require('electron');
-
+const {shell} = require("electron");
 
 function ipcInit() {
     store.clear();
-    ipcMain.on('asynchronous-message', (event, arg) => {
-        event.reply('asynchronous-reply', 'pong')
-    })
-      
-    ipcMain.on('synchronous-message', (event, arg) => {
-        event.returnValue = 'pong'
-    })
-
     require('./user');
     require('./project');
     require('./device');
+
+    ipcMain.on('post-current-version', (event) => {
+        let package = require('../../package.json');
+        event.reply('save-current-version', package.version);
+    });
+
+    ipcMain.on('open-version-url', (event) => {
+        shell.openExternal("https://github.com/pzl1026/xyDCloud/releases");
+    });
 
     // ipcMain.on('check-user-info', (event) => {
     //     // 如果没有登录，
