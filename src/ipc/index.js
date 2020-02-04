@@ -2,7 +2,7 @@ const { ipcMain, Notification, app } = require('electron');
 const {shell} = require("electron");
 
 function ipcInit() {
-    store.clear();
+    // store.clear();
     require('./user');
     require('./project');
     require('./device');
