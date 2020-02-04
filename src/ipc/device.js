@@ -76,7 +76,7 @@ function startDownload(fn) {
                 localPath: device.localPath,
                 ...video
             };
-            // todo:: 进行容量判断，进行设备状态判断
+            // todo:: 进行容量判断，进行设备状态判断(已在前端请求判断)
             checkAllowDown(video.size, device.localPath)
             .then(() => {
                 VOLUMN_NOTICE_TIMER = null;

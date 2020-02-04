@@ -1,6 +1,7 @@
 const _ = require('lodash');
 const {STORE_PREFIX} = require('../config/store');
-const { Notification } = require('electron');
+const { Notification } = require('electron')
+const checkAllowDown = require('../helper/checkAllowDown');
 // const disk = require('diskusage'); const os = require('os');
 // getFreeSpace('/');
 
@@ -142,24 +143,41 @@ function startDownloading() {
         return {
             ...video,
             projectName: item.name,
-            projectId: item.id
+            projectId: item.id,
+            localPath: item.localPath
         }
     })));
 
     DOWNLOADING_VIDEO = downloadVideos.find(item => !item.isSuccess);
     // if (DOWNLOADING_VIDEO.isFail) {     IS_PROJECT_DOWNLOADING = false;
     // return; }
-    if (!DOWNLOADING_VIDEO) {
+    if (!DOWNLOADING_VIDEO || !LINE_STATUS) {
+        //检查网络
         //判断是不是没有文件要下载了，如果没有了，轮询等待是否有新文件
         IS_PROJECT_DOWNLOADING = false;
         return;
     }
     console.log('start-download');
     // todo:: 进行网络判断，进行容量判断
-
-    mainWindow
+    checkAllowDown(DOWNLOADING_VIDEO.size, DOWNLOADING_VIDEO.localPath)
+    .then(() => {
+        VOLUMN_NOTICE_TIMER = null;
+        mainWindow
         .webContents
         .downloadURL(DOWNLOADING_VIDEO.url);
+    }, (disc) => {
+        IS_DEVICE_DOWNLOADING = false;
+        if (VOLUMN_NOTICE_TIMER) {
+            return;
+        }
+        VOLUMN_NOTICE_TIMER = setTimeout(() => {
+            VOLUMN_NOTICE_TIMER = null;
+        }, 300000)
+        if (!Notification.isSupported()) return;
+        let notification = new Notification({title: '新阅', subtitleString:'提示', body: `系统${disc}容量不够，请保证有足够的下载容量，且不能小于1G`});
+        notification.show();
+    });
+  
 }
 
 function loopDownload() {
