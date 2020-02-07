@@ -11,7 +11,7 @@ const pinging = require('../helper/ping');
 // 定义下载成功或者下载中回调函数
 function downloadFileCallback(arg, percentage, fn) {
     if (arg === "progress") {
-        console.log(percentage, 'percentage');
+        // console.log(percentage, 'percentage');
         // 显示进度
     } else if (arg === "finished") {
         // 通知完成
