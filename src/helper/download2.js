@@ -54,15 +54,16 @@ StreamDownload.prototype.downloadFile = function (
   });
 
   req.on('data', (chunk) => {
-    ping.promise.probe(this.ip, {
+    receivedBytes += chunk.length;
+    // 更新下载的文件块字节大小
+    receivedBytes += chunk.length;
+    self.showProgress(receivedBytes, totalBytes);
+    // self.showProgress(receivedBytes, totalBytes);
+    ping.promise.probe(self.ip, {
       timeout: 10,
       // extra: ["-i 2"],
     }).then(function (res) {
-        if (res.alive) {
-          // 更新下载的文件块字节大小
-          receivedBytes += chunk.length;
-          self.showProgress(receivedBytes, totalBytes);
-        } else {
+        if (!res.alive) {
           self.downloadErrorCallback(res, '设备链接异常', 400);
         }
     });

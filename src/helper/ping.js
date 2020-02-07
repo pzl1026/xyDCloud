@@ -56,6 +56,7 @@ const pinging = (function () {
             }).then(function (res) {
                 pingCount++;
                 if (res.alive) {
+                    console.log(host)
                     hostAlives.push(host);
                 }
                 pingCb();

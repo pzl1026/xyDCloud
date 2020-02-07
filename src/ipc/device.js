@@ -43,7 +43,7 @@ function downloadFileCallback(arg, percentage, fn) {
 }
 
 // 定义下载失败的回调
-function downloadErrorCallback(err, msg, statusCode) {
+function downloadErrorCallback(err, msg, statusCode, fn) {
     let userStore = store.get(STORE_PREFIX + USER_ID);
     userStore
         .devices
@@ -369,7 +369,11 @@ function clearLoop() {}
                         event.reply('check-device-status', DOWNLOADING_DEVICE_VIDEO);
                     });
                 }, 
-                downloadErrorCallback,
+                (arg, percentage) => {
+                    downloadErrorCallback(err, msg, statusCode, (DOWNLOADING_DEVICE_VIDEO) => {
+                        event.reply('check-device-status', DOWNLOADING_DEVICE_VIDEO);
+                    });
+                },
                 DOWNLOADING_DEVICE_VIDEO.ip);
         } else {
             if (!Notification.isSupported()) return;
