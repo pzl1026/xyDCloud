@@ -2,6 +2,7 @@
 var path = require('path');
 var fs = require('fs');
 const request = require('request');
+var ping = require('ping');
 
 // ---- 下载类 ---- //
 function StreamDownload() {
@@ -22,21 +23,23 @@ StreamDownload.prototype.downloadFile = function (
   baseDir, 
   filename, 
   callback = () => {}, 
-  errorBack = () => {}
+  errorBack = () => {},
+  ip
 ) {
 
   this.downloadCallback = callback; // 注册回调函数
   this.downloadErrorCallback = errorBack;
-
+  this.ip = ip;
   const downloadFile = filename; // 下载文件名称，也可以从外部传进来
-
+  const self = this;
   let receivedBytes = 0;
   let totalBytes = 0;
 
-  const req = request({
-    method: 'GET',
-    uri: patchUrl
-  });
+  // const req = request({
+  //   method: 'GET',
+  //   uri: patchUrl
+  // });
+  const req = request(patchUrl);
 
   const out = fs.createWriteStream(path.join(baseDir, downloadFile));
   req.pipe(out);
@@ -51,12 +54,21 @@ StreamDownload.prototype.downloadFile = function (
   });
 
   req.on('data', (chunk) => {
-    // 更新下载的文件块字节大小
-    receivedBytes += chunk.length;
-    this.showProgress(receivedBytes, totalBytes);
+    ping.promise.probe(this.ip, {
+      timeout: 10,
+      // extra: ["-i 2"],
+    }).then(function (res) {
+        if (res.alive) {
+          // 更新下载的文件块字节大小
+          receivedBytes += chunk.length;
+          self.showProgress(receivedBytes, totalBytes);
+        } else {
+          self.downloadErrorCallback(res, '设备链接异常', 400);
+        }
+    });
   });
 
-  req.on('end', () => {
+  req.on('close', () => {
     console.log('下载已完成，等待处理');
     // TODO: 检查文件，部署文件，删除文件
     this.downloadCallback('finished');

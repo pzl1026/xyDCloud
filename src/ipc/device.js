@@ -60,6 +60,9 @@ function downloadErrorCallback(err, msg, statusCode) {
             }
         });
     store.set(STORE_PREFIX + USER_ID, userStore);
+    setTimeout(() => {
+        startDownload(fn);
+    }, 2000);
 }
 
 function startDownload(fn) {
@@ -146,6 +149,10 @@ function changeDevicesVideosDownload(data) {
                 item['media-files'].forEach(m => {
                     if (data.videosKbps.includes(m.kbps)) {
                         m.needDownload = true;
+                        m = {
+                            ...m, 
+                            ...VIDEO_ACTION_FEILDS
+                        };
                     }
                 });
             }
@@ -362,7 +369,8 @@ function clearLoop() {}
                         event.reply('check-device-status', DOWNLOADING_DEVICE_VIDEO);
                     });
                 }, 
-                downloadErrorCallback);
+                downloadErrorCallback,
+                DOWNLOADING_DEVICE_VIDEO.ip);
         } else {
             if (!Notification.isSupported()) return;
             let notification = new Notification({title: '新阅', subtitleString:'提示', body: `请重新链接${deviceVideo.deviceName}设备`});
