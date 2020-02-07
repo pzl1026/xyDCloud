@@ -35,11 +35,15 @@ StreamDownload.prototype.downloadFile = function (
   let receivedBytes = 0;
   let totalBytes = 0;
 
-  // const req = request({
-  //   method: 'GET',
-  //   uri: patchUrl
-  // });
-  const req = request(patchUrl);
+  const req = request({
+    method: 'GET',
+    uri: patchUrl,
+    headers: {//设置请求头
+        'Content-Type': 'application/octet-stream',
+        // "content-length":  2 * Math.pow(1024, 2),s
+    },
+  });
+  // const req = rsequest(patchUrl);
 
   const out = fs.createWriteStream(path.join(baseDir, downloadFile));
   req.pipe(out);
@@ -54,7 +58,6 @@ StreamDownload.prototype.downloadFile = function (
   });
 
   req.on('data', (chunk) => {
-    receivedBytes += chunk.length;
     // 更新下载的文件块字节大小
     receivedBytes += chunk.length;
     self.showProgress(receivedBytes, totalBytes);

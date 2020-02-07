@@ -369,7 +369,7 @@ function clearLoop() {}
                         event.reply('check-device-status', DOWNLOADING_DEVICE_VIDEO);
                     });
                 }, 
-                (arg, percentage) => {
+                (err, msg, statusCode) => {
                     downloadErrorCallback(err, msg, statusCode, (DOWNLOADING_DEVICE_VIDEO) => {
                         event.reply('check-device-status', DOWNLOADING_DEVICE_VIDEO);
                     });
