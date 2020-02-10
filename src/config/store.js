@@ -5,7 +5,8 @@ const VIDEO_ACTION_FEILDS = {
     successTime: 0,  // 下载成功时间
     failTime: 0,    //下载失败时间
     failReason: '',     // 失败原因
-    downloadProgress: 0 // 下载进度
+    downloadProgress: 0, // 下载进度
+    localPath: ''
 };
 
 // 项目字段 

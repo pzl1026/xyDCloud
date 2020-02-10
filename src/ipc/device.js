@@ -76,7 +76,6 @@ function startDownload(fn) {
             DOWNLOADING_DEVICE_VIDEO = {
                 ip: device.ip,
                 deviceName: device.product['product-name'],
-                localPath: device.localPath,
                 ...video
             };
             // todo:: 进行容量判断，进行设备状态判断(已在前端请求判断)
@@ -146,18 +145,26 @@ function changeDevicesVideosDownload(data) {
         .devices
         .map(item => {
             if (item.ip == data.ip) {
-                item['media-files'].forEach(m => {
+                if (item.localPath == '') {
+                    item.localPath = data.localPath;
+                }
+                item['media-files'] = item['media-files'].map(m => {
                     if (data.videosKbps.includes(m.kbps)) {
-                        m.needDownload = true;
+                        // m.needDownload = true;
+                        // m.localPath =  data.localPath;
                         m = {
                             ...m, 
-                            ...VIDEO_ACTION_FEILDS
+                            ...VIDEO_ACTION_FEILDS,
+                            needDownload: true,
+                            localPath: data.localPath
                         };
                     }
+                    return m;
                 });
             }
             return item;
         });
+
     store.set(STORE_PREFIX + USER_ID, userStore);
     return userStore
         .devices
@@ -266,12 +273,28 @@ function clearLoop() {}
             properties: ['openDirectory', 'createDirectory']
         })
             .then(res => {
+                if (res.canceled) return;
                 // 返回文件夹路径
                 const localPath = res.filePaths[0];
                 let devices = setDeviceLocalpath(device.ip, localPath);
                 event.reply('render-device-list', devices);
             });
     });
+
+        // 打开文件夹窗口
+        ipcMain.on('open-folder-dialog-file', (event, device) => {
+            // 打开文件夹
+            dialog
+                .showOpenDialog(mainWindow, {
+                properties: ['openDirectory', 'createDirectory']
+            })
+                .then(res => {
+                    if (res.canceled) return;
+                    // 返回文件夹路径
+                    const localPath = res.filePaths[0];
+                    event.reply('video-localpath', localPath);
+                });
+        });
 
     // 设置项目目录
     ipcMain.on('delete-device', (event, device) => {
@@ -294,6 +317,7 @@ function clearLoop() {}
                 event.reply('check-device-status', DOWNLOADING_DEVICE_VIDEO);
             });
         }
+        event.reply('selected-video', DOWNLOADING_DEVICE_VIDEO);
     });
 
     // 获取所有设备视频
