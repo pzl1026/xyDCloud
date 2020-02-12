@@ -20,7 +20,7 @@ function downloadFileCallback(arg, percentage, fn) {
         userStore
             .devices
             .forEach(item => {
-                if (DOWNLOADING_DEVICE_VIDEO.ip == item.ip) {
+                if (DOWNLOADING_DEVICE_VIDEO.tid == item.tid) {
                     let successTime = new Date().valueOf();
                     item.successTime = successTime;
                     item.failReason = '';
@@ -33,6 +33,7 @@ function downloadFileCallback(arg, percentage, fn) {
                             m.failReason = '';
                         }
                     });
+                    item.isSuccess = item['media-files'].every(m => m.isSuccess);
                 }
             });
         store.set(STORE_PREFIX + USER_ID, userStore);
@@ -48,7 +49,7 @@ function downloadErrorCallback(err, msg, statusCode, fn) {
     userStore
         .devices
         .forEach(item => {
-            if (DOWNLOADING_DEVICE_VIDEO.ip == item.ip) {
+            if (DOWNLOADING_DEVICE_VIDEO.tid == item.tid) {
                 item.failReason = DOWNLOADING_DEVICE_VIDEO.name + '  '+ msg;
                 item['media-files'].forEach(m => {
                     if (DOWNLOADING_DEVICE_VIDEO.kbps === m.kbps) {
@@ -57,6 +58,7 @@ function downloadErrorCallback(err, msg, statusCode, fn) {
                         m.failTime = new Date().valueOf();
                     }
                 });
+                item.isFail = item['media-files'].some(m => m.isFail);
             }
         });
     store.set(STORE_PREFIX + USER_ID, userStore);
@@ -69,14 +71,19 @@ function startDownload(fn) {
     let userStore = store.get(STORE_PREFIX + USER_ID);
     let device = userStore
         .devices
-        .find(item => !item.isPause);
+        .find(item => !item.isPause && !item.isSuccess && !item.isFail);
+        console.log(LINE_STATUS, 'LINE_STATUS')
     if (device && LINE_STATUS) {
-        let video = device['media-files'].find(m => m.needDownload && !m.isSuccess && !m.isFail);
+        console.log(9292)
+        let video = device['media-files'].find(m => !m.isSuccess && !m.isFail);
         if (video) {
+            console.log(8282)
             DOWNLOADING_DEVICE_VIDEO = {
                 ip: device.ip,
+                tid: device.tid,
                 deviceName: device.product['product-name'],
-                ...video
+                ...video,
+                localPath: device.localPath
             };
             // todo:: 进行容量判断，进行设备状态判断(已在前端请求判断)
             checkAllowDown(video.size, device.localPath)
@@ -187,6 +194,29 @@ function saveDevice(device) {
     return userStore.devices;
 }
 
+// 保存设备任务
+function saveDevice2(device) {
+    const store = attrs.STORE;
+    let userStore = store.get(STORE_PREFIX + USER_ID);
+    if (!userStore.devices) {
+        userStore.devices = [];
+    }
+    device = {
+        ...DEVICE_ACTION_FEILDS,
+        ...device,
+        tid: parseInt(Math.random() * 1000000)
+    }
+    device['media-files'] = device['media-files'].map(m => {
+        return {
+            ...m,
+            ...DEVICE_VIDEO_ACTION_FEILDS
+        };
+    });
+    userStore.devices.push(device);
+    store.set(STORE_PREFIX + USER_ID, userStore);
+    return userStore.devices;
+}
+
 // 保存路径
 function setDeviceLocalpath(ip, localPath) {
     const store = attrs.STORE;
@@ -204,12 +234,12 @@ function setDeviceLocalpath(ip, localPath) {
 }
 
 // 删除设备
-function deleteDevice(ip) {
+function deleteDevice(tid) {
     const store = attrs.STORE;
     let userStore = store.get(STORE_PREFIX + USER_ID);
     userStore.devices = userStore
         .devices
-        .filter(m => m.ip != ip);
+        .filter(m => m.tid != tid);
     store.set(STORE_PREFIX + USER_ID, userStore);
     return userStore.devices;
 }
@@ -230,6 +260,14 @@ function loopStartDownload() {
 function clearLoop() {}
 
 !(function ipcDevice() {
+    //
+    ipcMain.on('get-devices', (event, data) => {
+        // 获取本机IP
+        const myHost = getIPAdress();
+
+        event.reply('get-ip-address', myHost);
+    });
+    
     // 该事件项目页面监听 轮询监听是否文件更新
     ipcMain.on('post-ip-address', (event, data) => {
         // 获取本机IP
@@ -298,7 +336,7 @@ function clearLoop() {}
 
     // 设置项目目录
     ipcMain.on('delete-device', (event, device) => {
-        let devices = deleteDevice(device.ip);
+        let devices = deleteDevice(device.tid);
         event.reply('render-device-list', devices);
     });
 
@@ -308,16 +346,21 @@ function clearLoop() {}
         event.reply('render-device-videos', videos);
     });
 
-    // 选择视频下载
+    // 创建设备下载任务
     ipcMain.on('change-device-videos-download', (event, data) => {
-        let videos = changeDevicesVideosDownload(data);
+        // let videos = changeDevicesVideosDownload(data);
+        console.log(data, 'daya')
+        let devices = saveDevice2(data);
+        console.log(IS_DEVICE_DOWNLOADING, 'IS_DEVICE_DOWNLOADING')
         if (!IS_DEVICE_DOWNLOADING) {
+            console.log('IS_DEVICE_DOWNLOADING222');
             IS_DEVICE_DOWNLOADING = true;
             startDownload((DOWNLOADING_DEVICE_VIDEO) => {
                 event.reply('check-device-status', DOWNLOADING_DEVICE_VIDEO);
             });
         }
-        event.reply('selected-video', DOWNLOADING_DEVICE_VIDEO);
+        // event.reply('selected-video', DOWNLOADING_DEVICE_VIDEO);
+        event.reply('render-device', devices);
     });
 
     // 获取所有设备视频
@@ -383,6 +426,7 @@ function clearLoop() {}
         let deviceVideo = data.deviceVideo;
         if(data.statusData.result == 0) {
             // 调用下载
+            console.log('startdownload');
             const StreamDownload2 = new StreamDownload();
             StreamDownload2.downloadFile(
                 deviceVideo.downpath, 

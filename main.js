@@ -41,11 +41,11 @@ function createWindow () {
   })
 
   // and load the index.html of the app.
-  mainWindow.loadFile('./dist/index.html')
-  // mainWindow.loadURL("http://localhost:8001");
+  // mainWindow.loadFile('./dist/index.html')
+  mainWindow.loadURL("http://localhost:8001");
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
@@ -94,11 +94,11 @@ app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') app.quit();
   
   // 清除设备
-  let userStore = store.get(STORE_PREFIX + USER_ID);
-  if (userStore) {
-    userStore.devices = [];
-    store.set(STORE_PREFIX + USER_ID, userStore);
-  }
+  // let userStore = store.get(STORE_PREFIX + USER_ID);
+  // if (userStore) {
+  //   userStore.devices = [];
+  //   store.set(STORE_PREFIX + USER_ID, userStore);
+  // }
 })
 
 app.on('activate', function () {

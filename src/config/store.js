@@ -24,6 +24,8 @@ const DEVICE_ACTION_FEILDS = {
     localPath: '', //所映射的本地文件夹,
     fialMsg: '',    //文件下载失败原因
     successTime: '', //设备文件全部下载成功时间
+    isSuccess: false,
+    isFail: false,
     // downloadCount: 0,   //设备正在下载的文件数
     // downloadSuccessCount: 0 //设备已经成功下载的数量
 };
@@ -31,10 +33,10 @@ const DEVICE_ACTION_FEILDS = {
 // 设备文件字段
 const DEVICE_VIDEO_ACTION_FEILDS = {
     ...VIDEO_ACTION_FEILDS,
-    needDownload: false
+    // needDownload: false
 }
 
-const STORE_PREFIX = 'user_store_';
+const STORE_PREFIX = '_user_store_';
 
 module.exports = {
     VIDEO_ACTION_FEILDS,
