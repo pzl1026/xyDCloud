@@ -7,6 +7,7 @@ const checkAllowDown = require('../helper/checkAllowDown');
 const {shell} = require("electron");
 const {getIPAdress, getVlan} = require('../helper/ip');
 const pinging = require('../helper/ping');
+const createNotification = require('../helper/notification');
 
 // 定义下载成功或者下载中回调函数
 function downloadFileCallback(arg, percentage, fn) {
@@ -97,10 +98,8 @@ function startDownload(fn) {
                 }
                 VOLUMN_NOTICE_TIMER = setTimeout(() => {
                     VOLUMN_NOTICE_TIMER = null;
-                }, 300000)
-                if (!Notification.isSupported()) return;
-                let notification = new Notification({title: '新阅', subtitleString:'提示', body: `系统${disc}容量不够，请保证有足够的下载容量，且不能小于1G`});
-                notification.show();
+                }, 300000);
+                createNotification('提示', `系统${disc}容量不够，请保证有足够的下载容量，且不能小于1G`);
             });
             // // 调用下载
             // const StreamDownload2 = new StreamDownload();
@@ -444,9 +443,7 @@ function clearLoop() {}
                 },
                 DOWNLOADING_DEVICE_VIDEO.ip);
         } else {
-            if (!Notification.isSupported()) return;
-            let notification = new Notification({title: '新阅', subtitleString:'提示', body: `请重新链接${deviceVideo.deviceName}设备`});
-            notification.show();
+            createNotification('提示', `请重新链接${deviceVideo.deviceName}设备`);
         }
     });
 })();

@@ -1,5 +1,6 @@
 const { ipcMain, Notification, app } = require('electron');
 const {shell} = require("electron");
+const createNotification = require('../helper/notification');
 
 function ipcInit() {
     store.clear();
@@ -35,9 +36,11 @@ function ipcInit() {
 
     ipcMain.on('change-line-status', (event, status) => {
         LINE_STATUS = status;
-        if (!Notification.isSupported() || status) return;
-        let notification = new Notification({title: '新阅', subtitleString:'提示', body: '网络已断开'});
-        notification.show();
+        createNotification('提示', '网络已断开');
+
+        // if (status) {
+        //     createNotification('提示', '网络已断开');
+        // }
     });
 
     ipcMain.on('change-start-login', (event, openAtLogin) => {

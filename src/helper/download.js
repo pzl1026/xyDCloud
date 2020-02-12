@@ -2,6 +2,7 @@ const _ = require('lodash');
 const {STORE_PREFIX} = require('../config/store');
 const { Notification } = require('electron')
 const checkAllowDown = require('../helper/checkAllowDown');
+const createNotification = require('../helper/notification');
 // const disk = require('diskusage'); const os = require('os');
 // getFreeSpace('/');
 
@@ -16,10 +17,8 @@ function downListeners() {
             function handleFail(msg) {
                 setSuccessOrFail(0, msg).then(() => {
                     IS_PROJECT_DOWNLOADING = false;
-                    if (!Notification.isSupported()) return;
                     let noticeMsg = `${DOWNLOADING_VIDEO.projectName}/${DOWNLOADING_VIDEO.name}文件下载失败`;
-                    let notification = new Notification({title: '新阅', subtitleString:'下载提示', body: noticeMsg});
-                    notification.show();
+                    createNotification('下载提示', noticeMsg);
                 });
             }
 
@@ -172,10 +171,8 @@ function startDownloading() {
         }
         VOLUMN_NOTICE_TIMER = setTimeout(() => {
             VOLUMN_NOTICE_TIMER = null;
-        }, 300000)
-        if (!Notification.isSupported()) return;
-        let notification = new Notification({title: '新阅', subtitleString:'提示', body: `系统${disc}容量不够，请保证有足够的下载容量，且不能小于1G`});
-        notification.show();
+        }, 300000);
+        createNotification('提示', `系统${disc}容量不够，请保证有足够的下载容量，且不能小于1G`);
     });
   
 }
