@@ -36,11 +36,9 @@ function ipcInit() {
 
     ipcMain.on('change-line-status', (event, status) => {
         LINE_STATUS = status;
-        createNotification('提示', '网络已断开');
-
-        // if (status) {
-        //     createNotification('提示', '网络已断开');
-        // }
+        if (status) {
+            createNotification('提示', '网络已断开');
+        }
     });
 
     ipcMain.on('change-start-login', (event, openAtLogin) => {

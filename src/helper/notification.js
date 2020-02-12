@@ -9,7 +9,7 @@ function createNotification(subtitleString, body) {
         title: '新阅', 
         subtitleString, 
         body, 
-        icon:  os.type() == 'Darwin' ? trayIcon + 'app.ico' : trayIcon + 'app.ico'
+        icon:  os.type() == 'Darwin' ? trayIcon + 'app.icns' : trayIcon + 'app.ico'
     });
     notification.show();
 }
