@@ -214,13 +214,13 @@ function saveDevice2(device) {
 }
 
 // 保存路径
-function setDeviceLocalpath(ip, localPath) {
+function setDeviceLocalpath(tid, localPath) {
     const store = attrs.STORE;
     let userStore = store.get(STORE_PREFIX + USER_ID);
     userStore.devices = userStore
         .devices
         .map(item => {
-            if (item.ip == ip) {
+            if (item.tid == tid) {
                 item.localPath = localPath;
             }
             return item;
@@ -310,7 +310,7 @@ function clearLoop() {}
                 if (res.canceled) return;
                 // 返回文件夹路径
                 const localPath = res.filePaths[0];
-                let devices = setDeviceLocalpath(device.ip, localPath);
+                let devices = setDeviceLocalpath(device.tid, localPath);
                 event.reply('render-device-list', devices);
             });
     });
@@ -392,20 +392,26 @@ function clearLoop() {}
     });
 
     // 改变是否暂停下载
-    ipcMain.on('change-device-pause-status', (event, ip) => {
+    ipcMain.on('change-device-pause-status', (event, tid) => {
         // 对某个项目的路径进行设置
         let userStore = store.get(STORE_PREFIX + USER_ID);
 
         userStore.devices = userStore
             .devices
             .map(item => {
-                if (item.ip == ip) {
+                if (item.tid == tid) {
                     item.isPause = !item.isPause;
                 }
                 return item;
             });
 
         store.set(STORE_PREFIX + USER_ID, userStore);
+        if (!IS_DEVICE_DOWNLOADING) {
+            IS_DEVICE_DOWNLOADING = true;
+            startDownload((DOWNLOADING_DEVICE_VIDEO) => {
+                event.reply('check-device-status', DOWNLOADING_DEVICE_VIDEO);
+            });
+        }
         event.reply('render-device', userStore.devices);
     });
 
