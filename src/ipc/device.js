@@ -430,6 +430,7 @@ function clearLoop() {}
                         event.reply('check-device-status', DOWNLOADING_DEVICE_VIDEO);
                         let userStore = store.get(STORE_PREFIX + USER_ID);
                         event.reply('get-devices-videos', userStore.devices);
+                        event.reply('render-device', userStore.devices);
                     });
                 }, 
                 (err, msg, statusCode) => {
@@ -437,6 +438,7 @@ function clearLoop() {}
                         event.reply('check-device-status', DOWNLOADING_DEVICE_VIDEO);
                         let userStore = store.get(STORE_PREFIX + USER_ID);
                         event.reply('get-devices-videos', userStore.devices);
+                        event.reply('render-device', userStore.devices);
                     });
                 },
                 DOWNLOADING_DEVICE_VIDEO.ip);
