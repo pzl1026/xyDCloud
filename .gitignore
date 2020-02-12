@@ -1,6 +1,6 @@
 .DS_Store
 node_modules/
-/dist/
+# /dist/
 /output/
 /_debug/
 npm-debug.log*

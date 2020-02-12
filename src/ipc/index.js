@@ -3,7 +3,7 @@ const {shell} = require("electron");
 const createNotification = require('../helper/notification');
 
 function ipcInit() {
-    store.clear();
+    // store.clear();
     require('./user');
     require('./project');
     require('./device');
