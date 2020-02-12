@@ -73,12 +73,9 @@ function startDownload(fn) {
     let device = userStore
         .devices
         .find(item => !item.isPause && !item.isSuccess && !item.isFail);
-        console.log(LINE_STATUS, 'LINE_STATUS')
     if (device && LINE_STATUS) {
-        console.log(9292)
         let video = device['media-files'].find(m => !m.isSuccess && !m.isFail);
         if (video) {
-            console.log(8282)
             DOWNLOADING_DEVICE_VIDEO = {
                 ip: device.ip,
                 tid: device.tid,
@@ -201,8 +198,8 @@ function saveDevice2(device) {
         userStore.devices = [];
     }
     device = {
-        ...DEVICE_ACTION_FEILDS,
         ...device,
+        ...DEVICE_ACTION_FEILDS,
         tid: parseInt(Math.random() * 1000000)
     }
     device['media-files'] = device['media-files'].map(m => {
@@ -348,11 +345,8 @@ function clearLoop() {}
     // 创建设备下载任务
     ipcMain.on('change-device-videos-download', (event, data) => {
         // let videos = changeDevicesVideosDownload(data);
-        console.log(data, 'daya')
         let devices = saveDevice2(data);
-        console.log(IS_DEVICE_DOWNLOADING, 'IS_DEVICE_DOWNLOADING')
         if (!IS_DEVICE_DOWNLOADING) {
-            console.log('IS_DEVICE_DOWNLOADING222');
             IS_DEVICE_DOWNLOADING = true;
             startDownload((DOWNLOADING_DEVICE_VIDEO) => {
                 event.reply('check-device-status', DOWNLOADING_DEVICE_VIDEO);

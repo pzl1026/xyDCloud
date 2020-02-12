@@ -21,7 +21,6 @@ const DEVICE_ACTION_FEILDS = {
     isPause: false,   //是否取消
     isDelete: false,   //是否删除
     progress: '',       //设备总文件下载进度
-    localPath: '', //所映射的本地文件夹,
     fialMsg: '',    //文件下载失败原因
     successTime: '', //设备文件全部下载成功时间
     isSuccess: false,
