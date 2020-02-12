@@ -428,11 +428,15 @@ function clearLoop() {}
                 (arg, percentage) => {
                     downloadFileCallback(arg, percentage, (DOWNLOADING_DEVICE_VIDEO) => {
                         event.reply('check-device-status', DOWNLOADING_DEVICE_VIDEO);
+                        let userStore = store.get(STORE_PREFIX + USER_ID);
+                        event.reply('get-devices-videos', userStore.devices);
                     });
                 }, 
                 (err, msg, statusCode) => {
                     downloadErrorCallback(err, msg, statusCode, (DOWNLOADING_DEVICE_VIDEO) => {
                         event.reply('check-device-status', DOWNLOADING_DEVICE_VIDEO);
+                        let userStore = store.get(STORE_PREFIX + USER_ID);
+                        event.reply('get-devices-videos', userStore.devices);
                     });
                 },
                 DOWNLOADING_DEVICE_VIDEO.ip);
