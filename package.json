@@ -6,7 +6,7 @@
   "scripts": {
     "start": "electron . --inspect=8000",
     "mac_pack": "electron-packager . xycloud --icon=img/app.icns --overwrite --out ../dist2/ --download.mirror=https://npm.taobao.org/mirrors/electron/",
-    "win_pack": "electron-packager . xycloud --icon=img/app.ico --platform win32 --arch x64 --out ../dist2/ --overwrite --download.mirror=https://npm.taobao.org/mirrors/electron/",
+    "win_pack": "electron-packager . xycloud --icon=img/app.ico --platform win32 --arch x64 --out ../dist2/ --overwrite --asar --app-version=1.0.0",
     "dmg": "electron-installer-dmg ../dist2/xycloud-darwin-x64/xycloud.app xycloud --overwrite --out ../dist2/",
     "setup": "electron-installer-windows --productName xycloud --src ../dist2/win-unpacked/ --dest ../dist2/installers/ "
   },
@@ -46,13 +46,12 @@
       "oneClick": false,
       "allowElevation": true,
       "allowToChangeInstallationDirectory": true,
-      "installerIcon": "img/app.ico",
-      "uninstallerIcon": "img/app.ico",
-      "installerHeaderIcon": "img/app.ico",
+      "installerIcon": "img/app.png",
+      "uninstallerIcon": "img/app.png",
+      "installerHeaderIcon": "img/app.png",
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "xycloud",
-      "include": "script/installer.nsh"
+      "shortcutName": "xycloud"
     },
     "dmg": {
       "contents": [
@@ -77,7 +76,7 @@
       ]
     },
     "win": {
-      "icon": "img/app.ico",
+      "icon": "img/app.png",
       "target": [
         {
           "target": "nsis",
