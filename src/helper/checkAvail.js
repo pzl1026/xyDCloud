@@ -1,8 +1,25 @@
 var spawn = require('child_process').spawn;
 var os = require('os');
+var process = require('child_process');
 
-function getAvailVolumn(fn) {
-    let free = spawn('df', ['-h']);
+function getAvailVolumn(fn, disc) {
+    return os.type() == 'Darwin' ? getAvailVolumnForMac(fn) : getAvailVolumnForWin(fn, disc);
+}
+
+function getAvailVolumnForWin(fn, disc) {
+    process.exec(`wmic LogicalDisk where "Caption=\'${disc}\'" get FreeSpace`, function(error, stdout, stderr) {
+        // console.log("error:"+error);
+        // console.log(stdout);
+        // console.log("stdout:"+typeof(stdout));
+        // console.log("stderr:"+stderr);
+        let arr = stdout.split('\n').splice(1);
+        let avail = parseInt(arr.join('').replace(/\r|\n|\s/g, ''));
+        fn && fn(avail);
+    });
+}
+
+function getAvailVolumnForMac(fn) {
+    let free = os.type() == 'Darwin' ? spawn('df', ['-h']) : spawn(`wmic LogicalDisk where "Caption=\'${disc}\'" get FreeSpace`);
     // 捕获标准输出并将其打印到控制台
     free.stdout.on('data', function (data) {
         // console.log('standard output:\n' + data + '\n');
@@ -16,7 +33,8 @@ function getAvailVolumn(fn) {
             let lastOtherStr = disInfostr.substr(firstDualSpaceIndex);
             let lastOtherStrArr = lastOtherStr.split(' ').filter(m => m);
             if (lastOtherStrArr.length == 0) break;
-            // console.log(lastOtherStrArr, 'lastOtherStrArr \n')
+            console.log(lastOtherStrArr, 'lastOtherStrArr \n')
+            return;
             let o ={
                 disc: arr[i].substr(0, arr[i].indexOf('  ')),
                 size: '',
@@ -91,9 +109,7 @@ function stringToUint8Array(str){
     }
    
     var tmpUint8Array = new Uint8Array(arr);
-    return tmpUint8Array
-  }
-
-
+    return tmpUint8Array;
+}
 
 module.exports = getAvailVolumn;
