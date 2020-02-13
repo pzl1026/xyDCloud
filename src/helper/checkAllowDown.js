@@ -7,7 +7,7 @@ function checkAllowDown (size, localPath) {
         let disc = localPath.substr(0, localPath.indexOf(':') + 1);
         checkAvail((avail) => {
             if(avail <= size + Math.pow(1024, 3)) {
-                reject('');
+                reject();
             } else {
                 resolve();
             }

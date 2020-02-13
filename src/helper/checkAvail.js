@@ -33,8 +33,7 @@ function getAvailVolumnForMac(fn) {
             let lastOtherStr = disInfostr.substr(firstDualSpaceIndex);
             let lastOtherStrArr = lastOtherStr.split(' ').filter(m => m);
             if (lastOtherStrArr.length == 0) break;
-            console.log(lastOtherStrArr, 'lastOtherStrArr \n')
-            return;
+            // console.log(lastOtherStrArr, 'lastOtherStrArr \n')
             let o ={
                 disc: arr[i].substr(0, arr[i].indexOf('  ')),
                 size: '',

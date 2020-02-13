@@ -10,7 +10,7 @@ const pinging = require('../helper/ping');
 const createNotification = require('../helper/notification');
 
 // 定义下载成功或者下载中回调函数
-function downloadFileCallback(arg, percentage, fn) {
+function downloadFileCallback(arg, percentage, fn, event) {
     if (arg === "progress") {
         // console.log(percentage, 'percentage');
         // 显示进度
@@ -18,28 +18,30 @@ function downloadFileCallback(arg, percentage, fn) {
         // 通知完成
         console.log('下载成功');
         let userStore = store.get(STORE_PREFIX + USER_ID);
-        userStore
-            .devices
-            .forEach(item => {
-                if (DOWNLOADING_DEVICE_VIDEO.tid == item.tid) {
-                    let successTime = new Date().valueOf();
-                    item.successTime = successTime;
-                    item.failReason = '';
-                    item['media-files'].forEach(m => {
-                        if (DOWNLOADING_DEVICE_VIDEO.kbps === m.kbps) {
-                            m.isSuccess = true;
-                            m.successTime = successTime;
-                            m.downloadProgress = 1;
-                            m.isFail = false;
-                            m.failReason = '';
-                            m.isCompleted = true;
-                        }
-                    });
+        userStore.devices = userStore.devices.map(item => {
+                    if (DOWNLOADING_DEVICE_VIDEO.tid == item.tid) {
+                        let successTime = new Date().valueOf();
+                        item.successTime = successTime;
+                        item.failReason = '';
+                        item['media-files'] = item['media-files'].map(m => {
+                            if (DOWNLOADING_DEVICE_VIDEO.kbps === m.kbps) {
+                                m.isSuccess = true;
+                                m.successTime = successTime;
+                                m.downloadProgress = 1;
+                                m.isFail = false;
+                                m.failReason = '';
+                                m.isCompleted = true;
+                            }
+                            return m;
+                        });
+                    }
                     item.isSuccess = item['media-files'].every(m => m.isSuccess);
                     item.isCompleted = item['media-files'].every(m => m.isSuccess || m.isFail);
-                }
-            });
+                    return item;
+                });
         store.set(STORE_PREFIX + USER_ID, userStore);
+        event.reply('get-devices-videos', userStore.devices);
+        event.reply('render-device', userStore.devices);
         setTimeout(() => {
             startDownload(fn);
         }, 2000);
@@ -47,7 +49,7 @@ function downloadFileCallback(arg, percentage, fn) {
 }
 
 // 定义下载失败的回调
-function downloadErrorCallback(err, msg, statusCode, fn) {
+function downloadErrorCallback(err, msg, statusCode, fn, event) {
     let userStore = store.get(STORE_PREFIX + USER_ID);
     userStore
         .devices
@@ -67,6 +69,8 @@ function downloadErrorCallback(err, msg, statusCode, fn) {
             }
         });
     store.set(STORE_PREFIX + USER_ID, userStore);
+    event.reply('get-devices-videos', userStore.devices);
+    event.reply('render-device', userStore.devices);
     setTimeout(() => {
         startDownload(fn);
     }, 2000);
@@ -74,10 +78,13 @@ function downloadErrorCallback(err, msg, statusCode, fn) {
 
 function startDownload(fn) {
     let userStore = store.get(STORE_PREFIX + USER_ID);
-    if (!userStore.devices) return;
+    if (!userStore.devices) {
+        IS_DEVICE_DOWNLOADING = false;
+        return;
+    }
     let device = userStore
         .devices
-        .find(item => !item.isPause && !item.isSuccess && !item.isFail);
+        .find(item => !item.isPause && !item.isCompleted);
     if (device && LINE_STATUS) {
         let video = device['media-files'].find(m => !m.isSuccess && !m.isFail);
         if (video) {
@@ -439,22 +446,19 @@ function clearLoop() {}
                 (arg, percentage) => {
                     downloadFileCallback(arg, percentage, (DOWNLOADING_DEVICE_VIDEO) => {
                         event.reply('check-device-status', DOWNLOADING_DEVICE_VIDEO);
-                        let userStore = store.get(STORE_PREFIX + USER_ID);
-                        event.reply('get-devices-videos', userStore.devices);
-                        event.reply('render-device', userStore.devices);
-                    });
+                    }, event);
                 }, 
                 (err, msg, statusCode) => {
                     downloadErrorCallback(err, msg, statusCode, (DOWNLOADING_DEVICE_VIDEO) => {
                         event.reply('check-device-status', DOWNLOADING_DEVICE_VIDEO);
-                        let userStore = store.get(STORE_PREFIX + USER_ID);
-                        event.reply('get-devices-videos', userStore.devices);
-                        event.reply('render-device', userStore.devices);
-                    });
+                    }, event);
                 },
                 DOWNLOADING_DEVICE_VIDEO.ip);
         } else {
-            createNotification('提示', `请重新链接${deviceVideo.deviceName}设备`);
+            IS_DEVICE_DOWNLOADING = false;
+            let userStore = store.get(STORE_PREFIX + USER_ID);
+            let device = userStore.devices.find(m => m.tid == deviceVideo.tid);;
+            createNotification('提示', `请重新链接${device.name}设备`);
         }
     });
 
