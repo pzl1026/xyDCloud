@@ -32,8 +32,8 @@ function createWindow () {
     height: 800,
     minWidth: 1280,
     minHeight: 800,
-    maxWidth: 1280,
-    maxHeight: 800,
+    // maxWidth: 1280,
+    // maxHeight: 800,
     show: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -43,11 +43,11 @@ function createWindow () {
   })
 
   // and load the index.html of the app.
-  mainWindow.loadFile('./dist/index.html')
-  // mainWindow.loadURL("http://localhost:8001");
+  // mainWindow.loadFile('./dist/index.html')
+  mainWindow.loadURL("http://localhost:8001");
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {

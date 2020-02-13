@@ -32,9 +32,11 @@ function downloadFileCallback(arg, percentage, fn) {
                             m.downloadProgress = 1;
                             m.isFail = false;
                             m.failReason = '';
+                            m.isCompleted = true;
                         }
                     });
                     item.isSuccess = item['media-files'].every(m => m.isSuccess);
+                    item.isCompleted = item['media-files'].every(m => m.isSuccess || m.isFail);
                 }
             });
         store.set(STORE_PREFIX + USER_ID, userStore);
@@ -57,9 +59,11 @@ function downloadErrorCallback(err, msg, statusCode, fn) {
                         m.isFail = true;
                         m.failReason = msg;
                         m.failTime = new Date().valueOf();
+                        m.isCompleted = true;
                     }
                 });
                 item.isFail = item['media-files'].some(m => m.isFail);
+                item.isCompleted = item['media-files'].every(m => m.isSuccess || m.isFail);
             }
         });
     store.set(STORE_PREFIX + USER_ID, userStore);
@@ -70,6 +74,7 @@ function downloadErrorCallback(err, msg, statusCode, fn) {
 
 function startDownload(fn) {
     let userStore = store.get(STORE_PREFIX + USER_ID);
+    if (!userStore.devices) return;
     let device = userStore
         .devices
         .find(item => !item.isPause && !item.isSuccess && !item.isFail);
@@ -450,6 +455,16 @@ function clearLoop() {}
                 DOWNLOADING_DEVICE_VIDEO.ip);
         } else {
             createNotification('提示', `请重新链接${deviceVideo.deviceName}设备`);
+        }
+    });
+
+    // 初始化启动客户端检查，如果用户登录直接开始下载
+    ipcMain.on('device-start-download', (event, data) => {
+        if (!IS_DEVICE_DOWNLOADING) {
+            IS_DEVICE_DOWNLOADING = true;
+            startDownload((DOWNLOADING_DEVICE_VIDEO) => {
+                event.reply('check-device-status', DOWNLOADING_DEVICE_VIDEO);
+            });
         }
     });
 })();

@@ -25,6 +25,7 @@ const DEVICE_ACTION_FEILDS = {
     successTime: '', //设备文件全部下载成功时间
     isSuccess: false,
     isFail: false,
+    isCompleted: false
     // downloadCount: 0,   //设备正在下载的文件数
     // downloadSuccessCount: 0 //设备已经成功下载的数量
 };
@@ -35,7 +36,7 @@ const DEVICE_VIDEO_ACTION_FEILDS = {
     // needDownload: false
 }
 
-const STORE_PREFIX = '_user_store_';
+const STORE_PREFIX = '__user_store__';
 
 module.exports = {
     VIDEO_ACTION_FEILDS,

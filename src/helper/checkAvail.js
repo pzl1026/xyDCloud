@@ -19,7 +19,7 @@ function getAvailVolumnForWin(fn, disc) {
 }
 
 function getAvailVolumnForMac(fn) {
-    let free = os.type() == 'Darwin' ? spawn('df', ['-h']) : spawn(`wmic LogicalDisk where "Caption=\'${disc}\'" get FreeSpace`);
+    let free = spawn('df', ['-h']);
     // 捕获标准输出并将其打印到控制台
     free.stdout.on('data', function (data) {
         // console.log('standard output:\n' + data + '\n');

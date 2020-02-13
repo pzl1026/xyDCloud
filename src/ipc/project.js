@@ -181,7 +181,7 @@ function saveProjectPath(data) {
     // 打开项目网页
     ipcMain.on('open-project-web-link', (event, projectId) => {
         // 待做
-        shell.openExternal("http://www.google.com");
+        shell.openExternal("http://uxinyue.com/xyapp/#/project");
     });
 
     // 删除某个已创建的项目任务
