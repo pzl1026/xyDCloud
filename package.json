@@ -1,5 +1,5 @@
 {
-  "name": "xy-dcloud",
+  "name": "xycloud",
   "version": "1.0.0",
   "description": "新阅云下载",
   "main": "main.js",
@@ -8,7 +8,7 @@
     "mac_pack": "electron-packager . xycloud --icon=img/app.icns --overwrite --out ../dist2/ --download.mirror=https://npm.taobao.org/mirrors/electron/",
     "win_pack": "electron-packager . xycloud --icon=img/app.ico --platform win32 --arch x64 --out ../dist2/ --overwrite --download.mirror=https://npm.taobao.org/mirrors/electron/",
     "dmg": "electron-installer-dmg ../dist2/xycloud-darwin-x64/xycloud.app xycloud --overwrite --out ../dist2/",
-    "setup": "electron-installer-windows --productName xinyue --src dist/xinyue-win32-x64/ --dest installers/ "
+    "setup": "electron-installer-windows --productName xycloud --src ../dist2/xycloud-win32-x64/ --dest ../dist2/installers/ "
   },
   "dev": true,
   "keywords": [
@@ -24,6 +24,7 @@
     "electron": "^6.1.4",
     "electron-builder": "^21.2.0",
     "electron-installer-dmg": "^3.0.0",
+    "electron-installer-windows": "^3.0.0",
     "electron-packager": "^14.1.1",
     "gulp": "^4.0.2"
   },
@@ -76,11 +77,12 @@
       ]
     },
     "win": {
-      "icon": "./img/app.ico",
+      "icon": "img/app.ico",
       "target": [
         {
           "target": "nsis",
           "arch": [
+            "x64",
             "ia32"
           ]
         }
