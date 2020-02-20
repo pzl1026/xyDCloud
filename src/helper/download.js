@@ -17,8 +17,8 @@ function downListeners() {
             function handleFail(msg) {
                 setSuccessOrFail(0, msg).then(() => {
                     IS_PROJECT_DOWNLOADING = false;
-                    let noticeMsg = `${DOWNLOADING_VIDEO.projectName}/${DOWNLOADING_VIDEO.name}文件下载失败`;
-                    createNotification('下载提示', noticeMsg);
+                    // let noticeMsg = `${DOWNLOADING_VIDEO.projectName}/${DOWNLOADING_VIDEO.name}文件下载失败`;
+                    // createNotification('下载提示', noticeMsg)/
                 });
             }
 
@@ -147,9 +147,10 @@ function startDownloading() {
         }
     })));
 
-    DOWNLOADING_VIDEO = downloadVideos.find(item => !item.isSuccess);
-    // if (DOWNLOADING_VIDEO.isFail) {     IS_PROJECT_DOWNLOADING = false;
-    // return; }
+    DOWNLOADING_VIDEO = downloadVideos.find(item => !item.isSuccess && !item.isFail);
+    if (!DOWNLOADING_VIDEO) {
+        DOWNLOADING_VIDEO = downloadVideos.find(item => !item.isSuccess);
+    }
     if (!DOWNLOADING_VIDEO || !LINE_STATUS) {
         //检查网络
         //判断是不是没有文件要下载了，如果没有了，轮询等待是否有新文件

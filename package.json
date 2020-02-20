@@ -8,7 +8,7 @@
     "mac_pack": "electron-packager . xycloud --icon=img/app.icns --overwrite --out ../dist2/ --download.mirror=https://npm.taobao.org/mirrors/electron/",
     "win_pack": "electron-packager . xycloud --icon=img/app.ico --platform win32 --arch x64 --out ../dist2/ --overwrite --asar --app-version=1.0.0",
     "dmg": "electron-installer-dmg ../dist2/xycloud-darwin-x64/xycloud.app xycloud --overwrite --out ../dist2/",
-    "setup": "electron-installer-windows --productName xycloud --src ../dist2/win-unpacked/ --dest ../dist2/installers/ "
+    "setup": "electron-installer-windows --productName xycloud --src ../dist2/xycloud-win32-x64/ --dest ../dist2/installers/ --icon ./img/app.ico"
   },
   "dev": true,
   "keywords": [
@@ -81,6 +81,7 @@
         {
           "target": "nsis",
           "arch": [
+            "x64",
             "ia32"
           ]
         }
