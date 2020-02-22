@@ -69,7 +69,7 @@
       ]
     },
     "mac": {
-      "icon": "./img/app.icns",
+      "icon": "./img/app-mac.png",
       "target": [
         "dmg",
         "zip"
