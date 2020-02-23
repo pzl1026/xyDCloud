@@ -8,6 +8,8 @@ const {shell} = require("electron");
 const {getIPAdress, getVlan} = require('../helper/ip');
 const pinging = require('../helper/ping');
 const createNotification = require('../helper/notification');
+var ping = require('ping');
+require('../helper/ipListener');
 
 // 定义下载成功或者下载中回调函数
 function downloadFileCallback(arg, percentage, fn, event) {
@@ -470,5 +472,26 @@ function clearLoop() {}
                 event.reply('check-device-status', DOWNLOADING_DEVICE_VIDEO);
             });
         }
+    });
+
+    // 检查设备IP是否ping通
+    ipcMain.on('emit-device-connect', (event, ip) => {
+        ping.promise.probe(ip, {
+            timeout: 10,
+            // extra: ["-i 2"],
+        }).then(function (res) {
+            let userStore = store.get(STORE_PREFIX + USER_ID);
+            userStore.devices = userStore.devices.map(item => {
+                if (res.alive) {
+                    item.isConnect = true;
+                } else {
+                    item.isConnect = false;
+                }
+                return item;
+            });
+            store.set(STORE_PREFIX + USER_ID, userStore);
+            event.reply('ping-pass', res.alive);
+            event.reply('render-device', userStore.devices);
+        });
     });
 })();

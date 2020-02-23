@@ -25,7 +25,8 @@ const DEVICE_ACTION_FEILDS = {
     successTime: '', //设备文件全部下载成功时间
     isSuccess: false,
     isFail: false,
-    isCompleted: false
+    isCompleted: false,
+    isConnect: true,
     // downloadCount: 0,   //设备正在下载的文件数
     // downloadSuccessCount: 0 //设备已经成功下载的数量
 };
