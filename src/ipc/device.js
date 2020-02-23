@@ -312,7 +312,6 @@ function pingIp(ip, fn) {
     });
 
     ipcMain.on('save-device', (event, device) => {
-        console.log('save-device')
         // 保存设备
         let devices = saveDevice(device);
         event.reply('render-device', devices);
@@ -374,7 +373,6 @@ function pingIp(ip, fn) {
 
     // 创建设备下载任务
     ipcMain.on('change-device-videos-download', (event, data) => {
-        console.log(828773)
         // let videos = changeDevicesVideosDownload(data);
         let devices = saveDevice2(data);
         if (!IS_DEVICE_DOWNLOADING) {
@@ -384,7 +382,6 @@ function pingIp(ip, fn) {
             });
         }
         // event.reply('selected-video', DOWNLOADING_DEVICE_VIDEO);
-        console.log('change-device-videos-download');
         event.reply('render-device', devices);
     });
 
@@ -446,7 +443,6 @@ function pingIp(ip, fn) {
                 event.reply('check-device-status', DOWNLOADING_DEVICE_VIDEO);
             });
         }
-        console.log('change-device-pause-status')
         event.reply('render-device', userStore.devices);
     });
 
@@ -503,7 +499,6 @@ function pingIp(ip, fn) {
 
     ipcMain.on('emit-device-connect3', (event, ip) => {
         pingIp(ip, (alive) => {
-            console.log('ping-pass3');
             event.reply('ping-pass3', alive);
         });
     });
