@@ -15,6 +15,7 @@ function getIPAdress() {
 
 function getVlan() {
     let host = getIPAdress();
+    if (!host) return;
     return host.substr(0, host.lastIndexOf('.')) + '.';
 }
 

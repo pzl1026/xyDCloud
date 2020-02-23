@@ -86,8 +86,8 @@ function startDownload(fn) {
     }
     let device = userStore
         .devices
-        .find(item => !item.isPause && !item.isCompleted);
-    if (device && LINE_STATUS) {
+        .find(item => !item.isPause && !item.isCompleted && item.isConnect);
+    if (device && LINE_STATUS === 0) {
         let video = device['media-files'].find(m => !m.isSuccess && !m.isFail);
         if (video) {
             DOWNLOADING_DEVICE_VIDEO = {
@@ -269,6 +269,17 @@ function loopStartDownload() {
 // 账号登出，或软件退出取消轮询监听
 function clearLoop() {}
 
+// 检查ping通ip
+function pingIp(ip, fn) {
+    ping.promise.probe(ip, {
+        timeout: 10,
+        // extra: ["-i 2"],
+    }).then(function (res) {
+        console.log(res, 'res');
+        fn && fn(res.alive);
+    });
+}
+
 !(function ipcDevice() {
     //
     ipcMain.on('get-devices', (event, data) => {
@@ -384,11 +395,13 @@ function clearLoop() {}
     // 获取可用设备
     ipcMain.on('post-can-devices', (event) => {
         let devicesIps = [];
-        if(DEVICE_SEARCHING) {
+        let currentIp = getVlan();
+        if(DEVICE_SEARCHING || !currentIp) {
+            event.reply('complete-devices-search', []);
             return;
         }
         DEVICE_SEARCHING = true;
-        pinging(getVlan(), {
+        pinging(currentIp, {
             pingCb: () => {},
             pingStatusCb: () => {},
             pingStatusSuccess: (host) => {
@@ -474,24 +487,49 @@ function clearLoop() {}
         }
     });
 
-    // 检查设备IP是否ping通
-    ipcMain.on('emit-device-connect', (event, ip) => {
-        ping.promise.probe(ip, {
-            timeout: 10,
-            // extra: ["-i 2"],
-        }).then(function (res) {
-            let userStore = store.get(STORE_PREFIX + USER_ID);
-            userStore.devices = userStore.devices.map(item => {
-                if (res.alive) {
-                    item.isConnect = true;
-                } else {
-                    item.isConnect = false;
-                }
-                return item;
-            });
-            store.set(STORE_PREFIX + USER_ID, userStore);
-            event.reply('ping-pass', res.alive);
-            event.reply('render-device', userStore.devices);
+    ipcMain.on('emit-device-connect2', (event, ip) => {
+        pingIp(ip, (alive) => {
+            event.reply('ping-pass2', alive);
         });
     });
+
+    ipcMain.on('emit-device-connect3', (event, ip) => {
+        pingIp(ip, (alive) => {
+            event.reply('ping-pass3', alive);
+        });
+    });
+
+    ipcMain.on('emit-device-connect4', (event, ip) => {
+        pingIp(ip, (alive) => {
+            event.reply('ping-pass4', alive);
+        });
+    });
+
+    ipcMain.on('emit-device-connect5', (event, ip) => {
+        pingIp(ip, (alive) => {
+            event.reply('ping-pass5', alive);
+        });
+    });
+
+    // 检查设备IP是否ping通
+    // ipcMain.on('emit-device-connect', (event, ip) => {
+    //     if(LINE_STATUS == 1) return;
+    //     ping.promise.probe(ip, {
+    //         timeout: 10,
+    //         // extra: ["-i 2"],
+    //     }).then(function (res) {
+    //         let userStore = store.get(STORE_PREFIX + USER_ID);
+    //         userStore.devices = userStore.devices.map(item => {
+    //             if (res.alive) {
+    //                 item.isConnect = true;
+    //             } else {
+    //                 item.isConnect = false;
+    //             }
+    //             return item;
+    //         });
+    //         store.set(STORE_PREFIX + USER_ID, userStore);
+    //         event.reply('ping-pass', res.alive);
+    //         event.reply('render-device', userStore.devices);
+    //     });
+    // });
 })();

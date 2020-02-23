@@ -11,7 +11,7 @@ const {STORE_PREFIX, DEVICE_ACTION_FEILDS, VIDEO_ACTION_FEILDS, DEVICE_VIDEO_ACT
     function pingPass() {
         let pingErrDevices = [];
         let userStore = store.get(STORE_PREFIX + USER_ID);
-        if (!userStore || !userStore.devices) return;
+        if (!userStore || !userStore.devices || LINE_STATUS == 1) return;
         userStore.devices.forEach((item, index) => {
             ping.promise.probe(item.ip, {
                 timeout: 10,
@@ -24,7 +24,7 @@ const {STORE_PREFIX, DEVICE_ACTION_FEILDS, VIDEO_ACTION_FEILDS, DEVICE_VIDEO_ACT
                     pingErrDevices.push(item);
                 }
 
-                store.set(STORE_PREFIX + USER_ID,  userStore.devices);
+                store.set(STORE_PREFIX + USER_ID,  userStore);
 
                 if (index == userStore.devices.length - 1 && pingErrDevices.length > 0 && noticeIsAlready == false) {
                     listenerTimer = setTimeout(() => {

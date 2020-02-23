@@ -28,7 +28,7 @@ var globalInit = (function () {
         global.DOWNLOADING_DEVICE_VIDEO = null;
         global.NEED_LOOP_DOWNLOAD = null;
         global.DEVICE_SEARCHING = false;
-        global.LINE_STATUS = true;
+        global.LINE_STATUS = 0;  // 0链接，1断开
         global.VOLUMN_NOTICE_TIMER = null;
     };
 })();

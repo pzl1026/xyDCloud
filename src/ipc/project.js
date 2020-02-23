@@ -38,6 +38,7 @@ function saveProjects(list) {
  */
 function saveProjectsVideos(data) {
     let userStore = user.getUserById(data.loginId);
+    if (!userStore.projects) return;
     userStore.projects = userStore
         .projects
         .map(item => {

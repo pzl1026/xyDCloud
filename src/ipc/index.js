@@ -35,8 +35,9 @@ function ipcInit() {
     // });
 
     ipcMain.on('change-line-status', (event, status) => {
-        LINE_STATUS = status;
-        if (status) {
+        LINE_STATUS = status ? 1 : 0;
+        console.log(LINE_STATUS, 'LINE_STATUS');
+        if (status == 1) {
             createNotification('提示', '网络已断开');
         }
     });

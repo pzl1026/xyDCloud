@@ -151,7 +151,7 @@ function startDownloading() {
     if (!DOWNLOADING_VIDEO) {
         DOWNLOADING_VIDEO = downloadVideos.find(item => !item.isSuccess);
     }
-    if (!DOWNLOADING_VIDEO || !LINE_STATUS) {
+    if (!DOWNLOADING_VIDEO || LINE_STATUS === 1) {
         //检查网络
         //判断是不是没有文件要下载了，如果没有了，轮询等待是否有新文件
         IS_PROJECT_DOWNLOADING = false;

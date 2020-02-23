@@ -15,6 +15,7 @@ const pinging = (function () {
     const ipsLength = 256;
 
     function startPing(vlanIp, opt) {
+        if (!vlanIp) return;
         pingCb = opt.pingCb;
         pingStatusCb = opt.pingStatusCb;
         pingAllStatusCb = opt.pingAllStatusCb;
