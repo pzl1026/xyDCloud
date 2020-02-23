@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "新阅云下载",
   "main": "main.js",
+  "downloadUrl": "https://github.com/pzl1026/xyDCloud/releases",
   "scripts": {
     "start": "electron . --inspect=8000",
     "mac_pack": "electron-packager . xycloud --icon=img/app.icns --overwrite --out ../dist2/ --download.mirror=https://npm.taobao.org/mirrors/electron/",

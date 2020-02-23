@@ -3,7 +3,7 @@ const {shell} = require("electron");
 const createNotification = require('../helper/notification');
 
 function ipcInit() {
-    store.clear();
+    // store.clear();
     require('./user');
     require('./project');
     require('./device');
@@ -13,8 +13,9 @@ function ipcInit() {
         event.reply('save-current-version', package.version);
     });
 
-    ipcMain.on('open-version-url', (event) => {
-        shell.openExternal("https://github.com/pzl1026/xyDCloud/releases");
+    ipcMain.on('open-version-url', (event, url) => {
+        console.log(url);
+        shell.openExternal(url);
     });
 
     // ipcMain.on('check-user-info', (event) => {

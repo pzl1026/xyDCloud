@@ -37,7 +37,7 @@ const DEVICE_VIDEO_ACTION_FEILDS = {
     // needDownload: false
 }
 
-const STORE_PREFIX = '__user__store__';
+const STORE_PREFIX = '_xy_user_store_';
 
 module.exports = {
     VIDEO_ACTION_FEILDS,
