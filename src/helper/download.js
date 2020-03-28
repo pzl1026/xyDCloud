@@ -11,6 +11,7 @@ function downListeners() {
         .webContents
         .session
         .on('will-download', (event, item, webContents) => {
+            // console.log(DOWNLOADING_VIDEO, '888')
             // 设置保存路径,使Electron不提示保存对话框。
             item.setSavePath(DOWNLOADING_VIDEO.localPath + '/' + DOWNLOADING_VIDEO.name + '.' + DOWNLOADING_VIDEO.ext);
             // DOWNLOADING_VIDEO.progress = 0;
@@ -23,6 +24,11 @@ function downListeners() {
             }
 
             item.on('updated', (event, state) => {
+                if (LINE_STATUS === 1) {
+                    handleFail('网络异常');
+                    item.cancel();
+                    return;
+                }
                 if (state === 'interrupted') {
                     // console.log('Download is interrupted but can be resumed');
                     // item.resume()
@@ -121,9 +127,11 @@ async function getFreeSpace(path) {
 function startDownloading() {
     const store = attrs.STORE;
     let userStore = store.get(STORE_PREFIX + USER_ID);
-    if (!userStore) return;
-    if (!userStore.projects || userStore.projects.length == 0) 
+    console.log('kaishi')
+    if (!userStore || !userStore.projects || userStore.projects.length == 0) 
         return;
+    // console.log(userStore
+    //     .projects, 'kaishi2');
     let projects = userStore
         .projects
         .map(item => {
@@ -158,7 +166,7 @@ function startDownloading() {
         return;
     }
     console.log('start-download');
-    // todo:: 进行网络判断，进行容量判断
+    // 进行容量判断
     checkAllowDown(DOWNLOADING_VIDEO.size, DOWNLOADING_VIDEO.localPath)
     .then(() => {
         VOLUMN_NOTICE_TIMER = null;

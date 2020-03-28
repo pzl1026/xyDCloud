@@ -12,20 +12,16 @@ const {shell} = require("electron");
 function saveProjects(list) {
     const store = attrs.STORE;
     let userStore = store.get(STORE_PREFIX + USER_ID);
-    userStore.projects = list.map(item => {
-        if (!userStore.projects) {
-            return Object.assign({}, item, PROJECT_ACTION_FEILDS);
-        }
+    if (!userStore.projects) {
+        userStore.projects = [];
+    }
 
-        let isset = userStore
-            .projects
-            .find(n => n.id == item.id);
-        if (isset) {
-            return isset;
-        }
-        
+    let isSetIds = userStore.projects.map(n => n.id);
+    let projectsAdded = list.filter(m => !isSetIds.includes(m.id));
+    projectsAdded = projectsAdded.map(item => {
         return Object.assign({}, item, PROJECT_ACTION_FEILDS);
     });
+    userStore.projects = [...userStore.projects, ...projectsAdded];
     store.set(STORE_PREFIX + USER_ID, userStore);
     return userStore
         .projects
@@ -107,7 +103,6 @@ function saveProjectPath(data) {
                 .projects
                 .filter(m => m.localPath && m.isCreated)
         }
-
         event.reply('render-setting-projects', projectsSeted.map(m => m.id));
     });
     // 该事件项目页面监听 轮询监听是否文件更新
@@ -146,6 +141,7 @@ function saveProjectPath(data) {
         let projects = saveProjectPath(data);
         // 如果刚新建第一个就开始下载；
         if (!IS_PROJECT_DOWNLOADING) {
+            console.log('startDwonloading')
             IS_PROJECT_DOWNLOADING = true;
             startDownloading();
         }
