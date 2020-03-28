@@ -43,6 +43,9 @@
     "directories": {
       "output": "../dist2"
     },
+    "electronDownload": {
+      "mirror": "https://npm.taobao.org/mirrors/electron/"
+    }, 
     "nsis": {
       "oneClick": false,
       "allowElevation": true,
