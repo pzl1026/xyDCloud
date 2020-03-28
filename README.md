@@ -43,3 +43,9 @@ Note: If you're using Linux Bash for Windows, [see this guide](https://www.howto
 ## License
 
 [CC0 1.0 (Public Domain)](LICENSE.md)
+
+## 打包
+
+- mac：electron-builder -m
+- win: electron-packager . xycloud --icon=img/app.ico --platform win32 --arch x64 --out ../dist2/ --overwrite --asar --app-version=1.0.0
+- win封装：npm run setup
