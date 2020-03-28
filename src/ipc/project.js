@@ -6,7 +6,7 @@ const {downListeners, startDownloading} = require('../helper/download');
 const {shell} = require("electron");
 
 /**
- * 保存项目到本地
+ * 保存所有项目到本地
  * @param {*} list
  */
 function saveProjects(list) {
