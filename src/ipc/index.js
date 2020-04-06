@@ -13,6 +13,10 @@ function ipcInit() {
         event.reply('save-current-version', package.version);
     });
 
+    ipcMain.on('open-handbook', (event) => {
+        const url = 'http://www.uxinyue.com/nbox_user_agreement.html'
+        shell.openExternal(url);
+    });
     ipcMain.on('open-version-url', (event, url) => {
         console.log(url);
         shell.openExternal(url);
